@@ -704,6 +704,34 @@ button{cursor:pointer}
   }
 }
 
+
+@media(max-width:760px){
+  :root{ --kb:0px; }
+
+  .composer{
+    position:relative !important;
+    z-index:50 !important;
+    transform:translateY(calc(-1 * var(--kb))) !important;
+    transition:transform .12s ease !important;
+    will-change:transform;
+    background:#fff !important;
+  }
+
+  .chatArea{
+    overflow:visible !important;
+  }
+
+  .messages{
+    padding-bottom:12px !important;
+  }
+
+  .sendBtn{
+    touch-action:manipulation !important;
+    -webkit-tap-highlight-color:transparent;
+    pointer-events:auto !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -922,7 +950,21 @@ async function sendMessage(){
   if(!q) return;
 
   addMessage(q, 'user');
-  $('messageInput').value = '';
+  const inputEl = $('messageInput');
+  inputEl.value = '';
+
+  if(window.matchMedia('(max-width: 760px)').matches){
+    // Dismiss the software keyboard immediately after sending.
+    try{ inputEl.blur(); }catch(e){}
+    document.documentElement.style.setProperty('--kb','0px');
+    document.documentElement.style.setProperty('--keyboard-offset','0px');
+    setTimeout(()=>{
+      window.scrollTo(0,0);
+      const msgs = document.getElementById('messages');
+      if(msgs) msgs.scrollTop = msgs.scrollHeight;
+    }, 120);
+  }
+
   $('sendBtn').disabled = true;
 
   try{
@@ -954,7 +996,34 @@ async function sendMessage(){
   }
 }
 
-$('sendBtn').addEventListener('click', sendMessage);
+
+const sendButton = $('sendBtn');
+let sendTouchLocked = false;
+
+function triggerSendFromPointer(e){
+  if(e){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  if(sendTouchLocked) return;
+  sendTouchLocked = true;
+
+  const input = $('messageInput');
+  const value = input.value.trim();
+  if(value){
+    sendMessage();
+  }
+
+  setTimeout(()=>{ sendTouchLocked = false; }, 280);
+}
+
+sendButton.addEventListener('pointerdown', triggerSendFromPointer, {passive:false});
+sendButton.addEventListener('touchstart', triggerSendFromPointer, {passive:false});
+sendButton.addEventListener('click', (e)=>{
+  // Fallback for desktop/keyboard activation.
+  if(e.detail === 0) triggerSendFromPointer(e);
+});
+
 
 $('messageInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter' && !e.shiftKey){
@@ -1047,6 +1116,38 @@ if(messageInputEl){
     if(window.matchMedia('(max-width: 760px)').matches){
       updateKeyboardOffset();
       messageInputEl.scrollTop = messageInputEl.scrollHeight;
+    }
+  });
+}
+
+
+function updateComposerKeyboardOffset(){
+  if(!window.matchMedia('(max-width: 760px)').matches) return;
+  const vv = window.visualViewport;
+  if(!vv){
+    document.documentElement.style.setProperty('--kb','0px');
+    return;
+  }
+  const keyboard = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+  // Do not move for tiny browser chrome changes.
+  document.documentElement.style.setProperty('--kb', keyboard > 80 ? `${keyboard}px` : '0px');
+}
+window.addEventListener('load', updateComposerKeyboardOffset);
+window.addEventListener('resize', updateComposerKeyboardOffset);
+window.addEventListener('orientationchange', updateComposerKeyboardOffset);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', updateComposerKeyboardOffset);
+  window.visualViewport.addEventListener('scroll', updateComposerKeyboardOffset);
+}
+
+
+const xiaoInput = document.getElementById('messageInput');
+if(xiaoInput){
+  xiaoInput.addEventListener('blur', ()=>{
+    if(window.matchMedia('(max-width: 760px)').matches){
+      document.documentElement.style.setProperty('--kb','0px');
+      document.documentElement.style.setProperty('--keyboard-offset','0px');
+      setTimeout(()=>window.scrollTo(0,0), 80);
     }
   });
 }
