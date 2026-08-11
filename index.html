@@ -225,7 +225,8 @@ button{cursor:pointer}
   overflow:auto;
   padding:28px 30px;
   color:#101a37;
-  background:#fff;
+  background:linear-gradient(180deg,#ffffff 0%,#fbfcff 100%);
+  border-bottom:1px solid #e6eaf4;
 }
 .emptyMessage{
   color:#7a86aa;
@@ -254,25 +255,33 @@ button{cursor:pointer}
 .meta{font-size:9px;color:#8a95b4;margin-top:6px}
 
 .composer{
-  border-top:1px solid #e5e9f4;
-  padding:16px 18px 16px;
-  background:#fff;
+  padding:14px 16px 16px;
+  background:#ffffff;
 }
 .messageBox{
   min-height:118px;
-  border:0;
+  border:1px solid #dfe5f2;
   width:100%;
   resize:none;
   outline:none;
   font-size:18px;
   line-height:1.6;
   color:#17203b;
-  background:#fff;
+  background:#ffffff;
+  border-radius:18px;
+  padding:16px 18px;
+  box-shadow:inset 0 1px 2px rgba(16,32,70,.03);
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.messageBox:focus{
+  border-color:#7d8cff;
+  box-shadow:0 0 0 3px rgba(125,140,255,.10);
 }
 .messageBox::placeholder{color:#8993b5}
 .composerBottom{
   display:flex;align-items:center;gap:10px;
-  margin-top:10px;
+  margin-top:12px;
+  padding:0 2px;
 }
 .smallBtn{
   height:46px;
@@ -441,7 +450,7 @@ button{cursor:pointer}
       </div>
 
       <div class="composer">
-        <textarea id="messageInput" class="messageBox" placeholder="Type your message here..."></textarea>
+        <textarea id="messageInput" class="messageBox" placeholder="Message Xiao_E˙◡˙ ..."></textarea>
         <div class="composerBottom">
           <button class="smallBtn" title="Attachment">⌕</button>
           <button class="modeBtn">◉ Evolution⌄</button>
@@ -499,6 +508,9 @@ function addMessage(text, who='bot', meta=''){
 
 function formatResult(payload){
   let out = payload.answer || 'Query completed.';
+  out = out
+    .replace(/我是小E 1\.0[。.]?/g,'我是 Xiao_E˙◡˙。')
+    .replace(/小E 1\.0/g,'Xiao_E˙◡˙');
 
   if(Array.isArray(payload.by_branch) && payload.by_branch.length){
     out += '\n\n' + payload.by_branch.map(x => `${x.branch_name}: ${x.count}`).join('\n');
