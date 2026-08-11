@@ -57,7 +57,7 @@ button{cursor:pointer}
 .logoName{
   font-size:39px;
   font-weight:850;
-  letter-spacing:-1.5px;
+  letter-spacing:-2.2px;
   line-height:1;
   background:linear-gradient(90deg,#8f41ff 0%,#4f6dff 46%,#00d9ef 100%);
   -webkit-background-clip:text;
@@ -164,7 +164,7 @@ button{cursor:pointer}
   margin:0;
   font-size:clamp(42px,5vw,72px);
   line-height:1;
-  letter-spacing:-2px;
+  letter-spacing:-2.6px;
   background:linear-gradient(90deg,#9f3eff 0%,#3e69ff 48%,#09d7e9 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
@@ -361,10 +361,17 @@ button{cursor:pointer}
   .card h3{font-size:14px;margin-bottom:9px}
   .card p{font-size:11px;line-height:1.5}
   .chatArea{min-height:52dvh;margin-top:12px;border-radius:20px}
-  .messages{min-height:300px;max-height:none;padding:18px 14px}
-  .messageBox{min-height:120px;font-size:16px}
-  .composer{padding:12px}
-  .sendBtn{width:50px;height:50px}
+  .messages{min-height:360px;max-height:none;padding:18px 14px}
+  .messageBox{
+    min-height:84px;
+    max-height:110px;
+    font-size:16px;
+    padding:13px 14px;
+  }
+  .composer{padding:10px 10px 11px}
+  .composerBottom{margin-top:8px}
+  .smallBtn,.modeBtn{height:42px}
+  .sendBtn{width:48px;height:48px}
 }
 </style>
 </head>
@@ -483,6 +490,7 @@ const $ = (id) => document.getElementById(id);
 const messages = $('messages');
 const emptyMessage = $('emptyMessage');
 const loginOverlay = $('loginOverlay');
+let greetingShown = false;
 
 function addMessage(text, who='bot', meta=''){
   if (emptyMessage) emptyMessage.remove();
@@ -533,7 +541,8 @@ async function renderSession(){
 
   if(session){
     loginOverlay.classList.add('hidden');
-    if(messages.children.length === 1 && emptyMessage){
+    if(!greetingShown){
+      greetingShown = true;
       addMessage(
         '你好，我是 Xiao_E˙◡˙。\nEvolution 模式已经连接，可以查询 Voucher、Partner、Branch 和 Redemption。',
         'bot',
@@ -541,6 +550,7 @@ async function renderSession(){
       );
     }
   }else{
+    greetingShown = false;
     loginOverlay.classList.remove('hidden');
   }
 }
