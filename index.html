@@ -615,6 +615,46 @@ button{cursor:pointer}
   }
 }
 
+
+@media(max-width:760px){
+  :root{
+    --keyboard-offset:0px;
+  }
+
+  .main{
+    padding-bottom:
+      calc(6px + env(safe-area-inset-bottom) + var(--keyboard-offset));
+    transition:padding-bottom .16s ease;
+  }
+
+  .chatArea{
+    transition:height .16s ease;
+  }
+
+  .composer{
+    position:relative;
+    z-index:5;
+    background:#fff;
+  }
+
+  .messageBox{
+    color:#17203b !important;
+    caret-color:#4d67ff;
+    opacity:1 !important;
+    -webkit-text-fill-color:#17203b;
+  }
+
+  .messageBox::placeholder{
+    color:#8b96b6;
+    opacity:1;
+  }
+
+  .messageBox:focus{
+    color:#17203b !important;
+    -webkit-text-fill-color:#17203b;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -900,9 +940,42 @@ function syncVisualViewport(){
   }
   lockViewport();
 }
+
+function updateKeyboardOffset(){
+  if(!window.matchMedia('(max-width: 760px)').matches) return;
+
+  const vv = window.visualViewport;
+  if(!vv){
+    document.documentElement.style.setProperty('--keyboard-offset','0px');
+    return;
+  }
+
+  const layoutHeight = window.innerHeight;
+  const visibleBottom = vv.offsetTop + vv.height;
+  const keyboardHeight = Math.max(0, layoutHeight - visibleBottom);
+
+  document.documentElement.style.setProperty('--keyboard-offset', `${keyboardHeight}px`);
+
+  const input = document.getElementById('messageInput');
+  if(document.activeElement === input){
+    requestAnimationFrame(()=>{
+      input.scrollIntoView({block:'nearest', inline:'nearest'});
+    });
+  }
+}
+
 window.addEventListener('load', syncVisualViewport);
 window.addEventListener('resize', syncVisualViewport);
 window.addEventListener('orientationchange', syncVisualViewport);
+
+window.addEventListener('load', updateKeyboardOffset);
+window.addEventListener('resize', updateKeyboardOffset);
+window.addEventListener('orientationchange', updateKeyboardOffset);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', updateKeyboardOffset);
+  window.visualViewport.addEventListener('scroll', updateKeyboardOffset);
+}
+
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize', syncVisualViewport);
   window.visualViewport.addEventListener('scroll', syncVisualViewport);
@@ -914,9 +987,17 @@ if(messageInputEl){
   messageInputEl.addEventListener('focus', ()=>{
     if(window.matchMedia('(max-width: 760px)').matches){
       setTimeout(()=>{
-        const composer = document.querySelector('.composer');
-        if(composer) composer.scrollIntoView({block:'end', inline:'nearest', behavior:'smooth'});
-      }, 120);
+        updateKeyboardOffset();
+        messageInputEl.scrollIntoView({block:'nearest', inline:'nearest'});
+        const len = messageInputEl.value.length;
+        try{ messageInputEl.setSelectionRange(len,len); }catch(e){}
+      }, 180);
+    }
+  });
+  messageInputEl.addEventListener('input', ()=>{
+    if(window.matchMedia('(max-width: 760px)').matches){
+      updateKeyboardOffset();
+      messageInputEl.scrollTop = messageInputEl.scrollHeight;
     }
   });
 }
