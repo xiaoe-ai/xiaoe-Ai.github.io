@@ -57,7 +57,7 @@ button{cursor:pointer}
 .logoName{
   font-size:39px;
   font-weight:850;
-  letter-spacing:-2.2px;
+  letter-spacing:-2.6px;
   line-height:1;
   background:linear-gradient(90deg,#8f41ff 0%,#4f6dff 46%,#00d9ef 100%);
   -webkit-background-clip:text;
@@ -347,9 +347,23 @@ button{cursor:pointer}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
+
+  .topbar{
+    margin-top:env(safe-area-inset-top);
+  }
+  .cards{
+    scroll-margin-top:calc(12px + env(safe-area-inset-top));
+  }
+
   .app{display:block}
   .sidebar{display:none}
-  .main{padding:10px 10px calc(10px + env(safe-area-inset-bottom))}
+  .main{
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      max(10px,env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      max(10px,env(safe-area-inset-left));
+  }
   .topbar{height:54px}
   .topBrand{font-size:18px}
   .hero{padding:34px 10px 24px}
@@ -492,10 +506,12 @@ const emptyMessage = $('emptyMessage');
 const loginOverlay = $('loginOverlay');
 let greetingShown = false;
 
-function addMessage(text, who='bot', meta=''){
-  if (emptyMessage) emptyMessage.remove();
+function addMessage(text, who='bot', meta='', marker=''){
+  const placeholder = document.getElementById('emptyMessage');
+  if (placeholder) placeholder.remove();
 
   const row = document.createElement('div');
+  if(marker) row.dataset.marker = marker;
   row.className = 'msgRow' + (who === 'user' ? ' userRow' : '');
 
   const bubble = document.createElement('div');
@@ -541,12 +557,14 @@ async function renderSession(){
 
   if(session){
     loginOverlay.classList.add('hidden');
-    if(!greetingShown){
+    const existingGreeting = messages.querySelector('[data-marker="welcome-greeting"]');
+    if(!existingGreeting){
       greetingShown = true;
       addMessage(
         '你好，我是 Xiao_E˙◡˙。\nEvolution 模式已经连接，可以查询 Voucher、Partner、Branch 和 Redemption。',
         'bot',
-        'Evolution · Read only'
+        'Evolution · Read only',
+        'welcome-greeting'
       );
     }
   }else{
