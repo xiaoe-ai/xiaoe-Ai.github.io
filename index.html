@@ -347,45 +347,151 @@ button{cursor:pointer}
   .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:760px){
-
-  .topbar{
-    margin-top:env(safe-area-inset-top);
+  html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    overscroll-behavior:none;
   }
-  .cards{
-    scroll-margin-top:calc(12px + env(safe-area-inset-top));
+  body{
+    min-height:100dvh;
   }
-
-  .app{display:block}
+  .app{
+    display:block;
+    height:100dvh;
+    min-height:100dvh;
+    overflow:hidden;
+  }
   .sidebar{display:none}
   .main{
+    height:100dvh;
+    min-height:0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
     padding:
-      calc(10px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-top))
       max(10px,env(safe-area-inset-right))
-      calc(10px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-bottom))
       max(10px,env(safe-area-inset-left));
   }
-  .topbar{height:54px}
-  .topBrand{font-size:18px}
-  .hero{padding:34px 10px 24px}
-  .hero h1{font-size:40px}
-  .hero p{font-size:13px}
-  .cards{grid-template-columns:1fr 1fr;gap:9px}
-  .card{min-height:180px;padding:14px}
-  .cardIcon{width:44px;height:44px;margin-bottom:14px;font-size:18px}
-  .card h3{font-size:14px;margin-bottom:9px}
-  .card p{font-size:11px;line-height:1.5}
-  .chatArea{min-height:52dvh;margin-top:12px;border-radius:20px}
-  .messages{min-height:360px;max-height:none;padding:18px 14px}
-  .messageBox{
-    min-height:84px;
-    max-height:110px;
-    font-size:16px;
-    padding:13px 14px;
+  .topbar{
+    flex:0 0 50px;
+    height:50px;
+    margin-top:0;
   }
-  .composer{padding:10px 10px 11px}
-  .composerBottom{margin-top:8px}
-  .smallBtn,.modeBtn{height:42px}
-  .sendBtn{width:48px;height:48px}
+  .topBrand{font-size:18px}
+  .actions{gap:8px}
+  .iconBtn{width:38px;height:38px}
+
+  .hero{
+    flex:0 0 auto;
+    padding:15px 8px 11px;
+  }
+  .hero h1{font-size:31px}
+  .hero p{font-size:11px;margin-top:8px}
+
+  .cards{
+    flex:0 0 auto;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:0;
+  }
+  .card{
+    min-height:132px;
+    padding:11px 12px;
+    border-radius:16px;
+  }
+  .cardIcon{
+    width:36px;height:36px;
+    margin-bottom:8px;
+    font-size:15px;
+    border-radius:11px;
+  }
+  .card h3{
+    font-size:12.5px;
+    margin-bottom:6px;
+  }
+  .card p{
+    font-size:9.5px;
+    line-height:1.35;
+  }
+  .arrow{
+    font-size:20px;
+    line-height:1;
+  }
+
+  .chatArea{
+    flex:1 1 auto;
+    min-height:0;
+    margin-top:8px;
+    border-radius:19px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .messages{
+    flex:1 1 auto;
+    min-height:0;
+    max-height:none;
+    overflow-y:auto;
+    overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    padding:14px 12px;
+  }
+
+  .msgRow{margin-bottom:12px}
+  .msgBubble{
+    max-width:88%;
+    font-size:12.5px;
+    line-height:1.48;
+    padding:11px 12px;
+    border-radius:14px;
+  }
+
+  .composer{
+    flex:0 0 auto;
+    padding:8px 9px 9px;
+  }
+
+  .messageBox{
+    min-height:66px;
+    max-height:82px;
+    font-size:14px;
+    line-height:1.45;
+    padding:11px 12px;
+    border-radius:15px;
+  }
+
+  .composerBottom{
+    margin-top:7px;
+    padding:0;
+  }
+  .smallBtn,.modeBtn{
+    height:38px;
+    min-height:38px;
+  }
+  .smallBtn{
+    min-width:42px;
+  }
+  .modeBtn{
+    padding:0 12px;
+    font-size:13px;
+  }
+  .sendBtn{
+    width:44px;
+    height:44px;
+    border-radius:14px;
+    font-size:18px;
+  }
+
+  .loginOverlay{
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+  }
 }
 </style>
 </head>
