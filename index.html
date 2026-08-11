@@ -655,6 +655,55 @@ button{cursor:pointer}
   }
 }
 
+
+@media(max-width:760px){
+  /* v10: keep the whole bottom action row fully visible above the keyboard */
+  .composer{
+    padding:7px 12px 12px !important;
+    overflow:visible !important;
+  }
+
+  .composerBottom{
+    display:flex !important;
+    align-items:center !important;
+    gap:8px !important;
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+    padding-right:2px !important;
+    box-sizing:border-box !important;
+  }
+
+  .smallBtn{
+    flex:0 0 42px !important;
+    width:42px !important;
+    min-width:42px !important;
+  }
+
+  .modeBtn{
+    flex:0 1 auto !important;
+    min-width:0 !important;
+    max-width:150px !important;
+  }
+
+  .sendBtn{
+    position:relative !important;
+    right:auto !important;
+    bottom:auto !important;
+    margin-left:auto !important;
+    flex:0 0 42px !important;
+    width:42px !important;
+    min-width:42px !important;
+    height:42px !important;
+    transform:none !important;
+    z-index:8 !important;
+  }
+
+  .main:focus-within .composer{
+    padding-bottom:14px !important;
+  }
+}
+
 </style>
 </head>
 <body>
