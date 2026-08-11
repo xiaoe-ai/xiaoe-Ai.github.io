@@ -1,77 +1,618 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#050716" />
-<title>小E · Evolution AI Assistant</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050716">
+<title>Xiao_E˙◡˙ · AI Assistant</title>
 <style>
-:root{--bg:#050716;--bg2:#0b1230;--card:rgba(14,22,58,.88);--line:rgba(116,127,255,.35);--text:#f7f8ff;--muted:#aeb8d8;--purple:#c05cff;--blue:#6ba8ff;--cyan:#30e2ee;--danger:#ff7b8f}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text)}
-body{min-height:100dvh;background:radial-gradient(circle at 15% 10%,rgba(168,85,247,.18),transparent 28%),radial-gradient(circle at 85% 20%,rgba(59,130,246,.16),transparent 30%),linear-gradient(160deg,#050716 0%,#0b1230 48%,#060919 100%)}
-.shell{width:min(860px,100%);min-height:100dvh;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) 12px calc(14px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 4px}
-.brand{display:flex;align-items:center;gap:11px}.orb{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:18px;background:radial-gradient(circle at 35% 30%,rgba(192,92,255,.6),rgba(40,90,190,.4) 45%,rgba(4,20,50,.95) 72%);border:1px solid rgba(94,207,255,.55);box-shadow:0 0 22px rgba(94,128,255,.32)}
-.brand h1{font-size:22px;margin:0;letter-spacing:.5px}.brand p{margin:2px 0 0;font-size:11px;color:var(--muted);letter-spacing:1.5px}
-.status{font-size:12px;color:var(--muted);padding:7px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.035)}
-.card{background:linear-gradient(145deg,rgba(23,22,72,.92),rgba(7,19,52,.94));border:1px solid var(--line);border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 18px 38px rgba(0,0,0,.28)}
-.login{padding:18px}.login h2{margin:0 0 6px;font-size:20px}.login p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
-input,button{font:inherit}input{width:100%;border:1px solid rgba(120,137,255,.28);background:rgba(5,11,35,.75);color:#fff;border-radius:13px;padding:12px 13px;outline:none}input:focus{border-color:#729bff;box-shadow:0 0 0 3px rgba(80,123,255,.12)}
-button{border:0;border-radius:13px;padding:12px 15px;color:#fff;font-weight:700;cursor:pointer;background:linear-gradient(90deg,#9b5cff,#4d8fff,#28dce8);box-shadow:0 8px 20px rgba(54,100,255,.22)}button.secondary{background:rgba(255,255,255,.06);border:1px solid rgba(138,151,255,.3);box-shadow:none}.error{color:var(--danger);font-size:12px;margin-top:10px;min-height:16px}
-.chat{flex:1;min-height:0;display:none;flex-direction:column;overflow:hidden}.chat.active{display:flex}.messages{flex:1;min-height:52dvh;max-height:68dvh;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:10px}.msg{max-width:86%;padding:11px 13px;border-radius:16px;line-height:1.48;font-size:14px;white-space:pre-wrap;word-break:break-word}.bot{align-self:flex-start;background:rgba(68,78,155,.22);border:1px solid rgba(123,139,255,.26);border-bottom-left-radius:5px}.user{align-self:flex-end;background:linear-gradient(135deg,rgba(156,76,255,.75),rgba(56,128,255,.75));border-bottom-right-radius:5px}.meta{font-size:10px;color:#aab5d4;margin-top:5px}.composer{display:grid;grid-template-columns:1fr auto;gap:8px;padding:12px;border-top:1px solid rgba(128,145,255,.18)}.composer input{padding:13px 14px}
-.quick{display:flex;gap:7px;overflow:auto;padding:0 12px 12px}.chip{flex:0 0 auto;border:1px solid rgba(116,138,255,.28);background:rgba(255,255,255,.04);box-shadow:none;color:#dfe5ff;padding:8px 10px;font-size:12px;border-radius:999px}
-.footer{text-align:center;color:#8491b8;font-size:10px;padding:2px 0 0}.hidden{display:none!important}
-@media(max-width:640px){.shell{padding-left:9px;padding-right:9px}.grid{grid-template-columns:1fr}.topbar{padding-top:4px}.brand h1{font-size:19px}.orb{width:42px;height:42px}.messages{min-height:55dvh;max-height:none}.msg{max-width:92%}.status{font-size:10px}}
+:root{
+  --bg:#050716;
+  --bg2:#081127;
+  --panel:#0a1230;
+  --panel2:#0e183b;
+  --line:rgba(100,124,255,.22);
+  --line2:rgba(33,220,239,.24);
+  --text:#f7f8ff;
+  --muted:#aeb8d8;
+  --purple:#9b4dff;
+  --blue:#3278ff;
+  --cyan:#18d8ee;
+  --green:#33e3c0;
+  --danger:#ff7b8f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body{
+  min-height:100dvh;
+  background:
+    radial-gradient(circle at 52% 18%,rgba(26,79,255,.14),transparent 30%),
+    radial-gradient(circle at 82% 30%,rgba(126,43,255,.13),transparent 30%),
+    radial-gradient(circle at 18% 30%,rgba(24,216,238,.08),transparent 26%),
+    linear-gradient(160deg,#040614 0%,#071027 48%,#030612 100%);
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+
+.app{
+  width:min(1600px,100%);
+  min-height:100dvh;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:305px minmax(0,1fr);
+  background:linear-gradient(180deg,rgba(4,7,20,.72),rgba(3,6,16,.88));
+}
+
+.sidebar{
+  min-height:100dvh;
+  padding:28px 22px 22px;
+  border-right:1px solid rgba(104,125,255,.18);
+  background:
+    radial-gradient(circle at 10% 10%,rgba(143,64,255,.10),transparent 30%),
+    linear-gradient(180deg,rgba(5,9,25,.96),rgba(4,8,22,.98));
+  display:flex;
+  flex-direction:column;
+}
+.logoWrap{padding:0 8px 28px}
+.logoName{
+  font-size:39px;
+  font-weight:850;
+  letter-spacing:-1.5px;
+  line-height:1;
+  background:linear-gradient(90deg,#8f41ff 0%,#4f6dff 46%,#00d9ef 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.logoSub{margin-top:9px;font-size:12px;letter-spacing:4px;color:#eef1ff}
+
+.nav{display:flex;flex-direction:column;gap:9px}
+.navItem{
+  display:flex;align-items:center;gap:12px;
+  min-height:58px;padding:0 14px;
+  border-radius:16px;
+  color:#edf1ff;text-decoration:none;
+  border:1px solid transparent;
+}
+.navItem.active{
+  background:linear-gradient(90deg,#6e31ff,#3c67ff 53%,#12c9e8);
+  box-shadow:0 8px 24px rgba(42,84,255,.24),0 0 18px rgba(0,214,238,.10);
+}
+.navIcon{
+  width:28px;height:28px;border-radius:8px;
+  display:grid;place-items:center;
+  color:#fff;font-size:16px;
+}
+.navText{font-size:15px;font-weight:650}
+.badge{
+  margin-left:auto;
+  font-size:10px;padding:6px 9px;border-radius:999px;
+  background:rgba(255,255,255,.05);color:#cad2e7;
+}
+.badge.connected{background:rgba(0,220,238,.08);color:#19dbe9}
+
+.statusBox{
+  margin-top:auto;
+  border:1px solid rgba(101,124,255,.18);
+  border-radius:18px;
+  padding:15px;
+  display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.018);
+}
+.statusIcon{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(145deg,rgba(0,217,238,.26),rgba(8,88,122,.32));
+  display:grid;place-items:center;color:#15ddeb;font-weight:900;
+}
+.statusTitle{font-size:12px}
+.statusSub{margin-top:4px;font-size:11px;color:#19dbe9}
+
+.account{
+  margin-top:16px;
+  padding:14px 8px 0;
+  display:flex;align-items:center;gap:11px;
+}
+.avatar{
+  width:46px;height:46px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#8f41ff,#1678ff 60%,#16d7eb);
+  box-shadow:0 0 18px rgba(78,105,255,.35);
+  font-weight:800;
+}
+.accountName{font-size:12px;letter-spacing:.3px}
+.chev{margin-left:auto;color:#a8b3d2}
+
+.main{
+  min-width:0;
+  min-height:100dvh;
+  display:flex;
+  flex-direction:column;
+  padding:24px 28px 24px;
+}
+.topbar{
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(106,124,255,.18);
+}
+.topBrand{font-size:24px;font-weight:800;letter-spacing:-.3px}
+.actions{display:flex;gap:10px}
+.iconBtn{
+  width:42px;height:42px;border-radius:13px;
+  border:1px solid rgba(102,124,255,.18);
+  background:rgba(255,255,255,.02);
+  color:white;font-size:18px;
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:58px 24px 40px;
+  text-align:center;
+}
+.hero:before{
+  content:"";
+  position:absolute;left:-8%;right:-8%;bottom:0;height:140px;
+  background:
+    radial-gradient(ellipse at center bottom,rgba(16,115,255,.60) 0%,rgba(0,199,255,.15) 28%,transparent 58%),
+    repeating-linear-gradient(10deg,transparent 0 18px,rgba(127,51,255,.11) 19px 20px,transparent 21px 34px);
+  filter:blur(.2px);
+  opacity:.9;
+  pointer-events:none;
+}
+.hero h1{
+  position:relative;z-index:1;
+  margin:0;
+  font-size:clamp(42px,5vw,72px);
+  line-height:1;
+  letter-spacing:-2px;
+  background:linear-gradient(90deg,#9f3eff 0%,#3e69ff 48%,#09d7e9 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{
+  position:relative;z-index:1;
+  margin:17px auto 0;
+  color:#e2e6f5;
+  font-size:16px;
+}
+
+.cards{
+  position:relative;z-index:2;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+  margin-top:-6px;
+}
+.card{
+  min-height:250px;
+  padding:24px 24px 20px;
+  border-radius:20px;
+  border:1px solid rgba(92,117,255,.26);
+  background:linear-gradient(145deg,rgba(13,22,52,.94),rgba(6,13,34,.96));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 12px 26px rgba(0,0,0,.16);
+  display:flex;flex-direction:column;
+}
+.cardIcon{
+  width:58px;height:58px;border-radius:15px;
+  display:grid;place-items:center;
+  font-size:24px;font-weight:900;
+  margin-bottom:22px;
+}
+.purple{background:rgba(126,45,255,.20);color:#c055ff}
+.blue{background:rgba(35,90,255,.20);color:#3985ff}
+.cyan{background:rgba(0,215,238,.16);color:#14dfea}
+.magenta{background:rgba(178,41,255,.17);color:#dc4cff}
+.card h3{margin:0 0 14px;font-size:18px}
+.card p{margin:0;color:#ccd3e8;font-size:14px;line-height:1.7}
+.arrow{margin-top:auto;align-self:flex-end;font-size:27px}
+.purpleText{color:#bd40ff}.blueText{color:#2e7bff}.cyanText{color:#12d7df}.magentaText{color:#ce42ff}
+
+.chatArea{
+  flex:1;
+  min-height:340px;
+  margin-top:18px;
+  border-radius:24px;
+  background:#ffffff;
+  border:1px solid rgba(86,123,255,.30);
+  box-shadow:0 0 0 1px rgba(152,54,255,.14),0 10px 28px rgba(7,19,65,.28);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.messages{
+  flex:1;
+  min-height:250px;
+  max-height:46dvh;
+  overflow:auto;
+  padding:28px 30px;
+  color:#101a37;
+  background:#fff;
+}
+.emptyMessage{
+  color:#7a86aa;
+  font-size:18px;
+}
+.msgRow{display:flex;margin-bottom:18px}
+.msgBubble{
+  max-width:78%;
+  padding:13px 15px;
+  border-radius:16px;
+  font-size:14px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.botBubble{
+  background:#f2f5ff;
+  color:#1b2546;
+  border:1px solid #e0e7ff;
+}
+.userRow{justify-content:flex-end}
+.userBubble{
+  background:linear-gradient(135deg,#7a4cff,#3677ff);
+  color:#fff;
+}
+.meta{font-size:9px;color:#8a95b4;margin-top:6px}
+
+.composer{
+  border-top:1px solid #e5e9f4;
+  padding:16px 18px 16px;
+  background:#fff;
+}
+.messageBox{
+  min-height:118px;
+  border:0;
+  width:100%;
+  resize:none;
+  outline:none;
+  font-size:18px;
+  line-height:1.6;
+  color:#17203b;
+  background:#fff;
+}
+.messageBox::placeholder{color:#8993b5}
+.composerBottom{
+  display:flex;align-items:center;gap:10px;
+  margin-top:10px;
+}
+.smallBtn{
+  height:46px;
+  min-width:46px;
+  border-radius:13px;
+  border:1px solid #d8deef;
+  background:#fff;
+  color:#18213d;
+}
+.modeBtn{
+  height:46px;
+  padding:0 16px;
+  border-radius:13px;
+  border:1px solid #d8deef;
+  background:#fff;
+  color:#17203b;
+  font-weight:650;
+}
+.sendBtn{
+  margin-left:auto;
+  width:54px;height:54px;border:0;border-radius:16px;
+  background:linear-gradient(145deg,#6d31ff,#3478ff 58%,#14cfe5);
+  color:white;font-size:22px;
+  box-shadow:0 8px 18px rgba(47,95,255,.20);
+}
+
+.loginOverlay{
+  position:fixed;inset:0;z-index:30;
+  background:rgba(2,4,12,.86);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  padding:18px;
+}
+.loginCard{
+  width:min(520px,100%);
+  border-radius:24px;
+  border:1px solid rgba(110,128,255,.28);
+  background:linear-gradient(145deg,rgba(23,22,72,.98),rgba(7,19,52,.98));
+  padding:26px;
+  box-shadow:0 20px 50px rgba(0,0,0,.35);
+}
+.loginCard h2{margin:0 0 7px;font-size:26px}
+.loginCard p{margin:0 0 18px;color:#b9c4e0;font-size:13px;line-height:1.5}
+.loginInput{
+  width:100%;
+  height:50px;
+  margin-bottom:10px;
+  border-radius:14px;
+  border:1px solid rgba(118,137,255,.28);
+  background:rgba(5,11,35,.75);
+  color:#fff;padding:0 14px;outline:none;
+}
+.loginBtn{
+  width:100%;height:50px;border:0;border-radius:14px;
+  color:white;font-weight:800;
+  background:linear-gradient(90deg,#9b5cff,#4d8fff,#28dce8);
+}
+.loginError{min-height:18px;margin-top:10px;color:var(--danger);font-size:12px}
+.hidden{display:none!important}
+
+@media(max-width:1100px){
+  .app{grid-template-columns:250px minmax(0,1fr)}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .app{display:block}
+  .sidebar{display:none}
+  .main{padding:10px 10px calc(10px + env(safe-area-inset-bottom))}
+  .topbar{height:54px}
+  .topBrand{font-size:18px}
+  .hero{padding:34px 10px 24px}
+  .hero h1{font-size:40px}
+  .hero p{font-size:13px}
+  .cards{grid-template-columns:1fr 1fr;gap:9px}
+  .card{min-height:180px;padding:14px}
+  .cardIcon{width:44px;height:44px;margin-bottom:14px;font-size:18px}
+  .card h3{font-size:14px;margin-bottom:9px}
+  .card p{font-size:11px;line-height:1.5}
+  .chatArea{min-height:52dvh;margin-top:12px;border-radius:20px}
+  .messages{min-height:300px;max-height:none;padding:18px 14px}
+  .messageBox{min-height:120px;font-size:16px}
+  .composer{padding:12px}
+  .sendBtn{width:50px;height:50px}
+}
 </style>
 </head>
 <body>
-<div class="shell">
-  <div class="topbar">
-    <div class="brand"><div class="orb">E</div><div><h1>小E</h1><p>EVOLUTION AI ASSISTANT · 1.0</p></div></div>
-    <div class="status" id="status">未登录</div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="logoWrap">
+      <div class="logoName">Xiao_E˙◡˙</div>
+      <div class="logoSub">AI ASSISTANT</div>
+    </div>
+
+    <nav class="nav">
+      <a class="navItem active" href="#"><span class="navIcon">▣</span><span class="navText">Chat</span></a>
+      <a class="navItem" href="#"><span class="navIcon">⌁</span><span class="navText">Evolution</span><span class="badge connected">Connected</span></a>
+      <a class="navItem" href="#"><span class="navIcon">◇</span><span class="navText">Study</span><span class="badge">Soon</span></a>
+      <a class="navItem" href="#"><span class="navIcon">⬡</span><span class="navText">General</span><span class="badge">Soon</span></a>
+      <a class="navItem" href="#"><span class="navIcon">▱</span><span class="navText">Files</span><span class="badge">Soon</span></a>
+    </nav>
+
+    <div class="statusBox">
+      <div class="statusIcon">✓</div>
+      <div>
+        <div class="statusTitle">Evolution Supabase</div>
+        <div class="statusSub">Read-only mode 🔒</div>
+      </div>
+    </div>
+
+    <div class="account">
+      <div class="avatar">E</div>
+      <div class="accountName">EVOLUTION OPTICAL</div>
+      <div class="chev">⌄</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topBrand">Xiao_E˙◡˙</div>
+      <div class="actions">
+        <button class="iconBtn" title="Theme">☼</button>
+        <button class="iconBtn" id="logoutTop" title="Logout">↪</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Hi, I’m Xiao_E˙◡˙</h1>
+      <p>Your AI Assistant for work, study, and everyday.</p>
+    </section>
+
+    <section class="cards">
+      <article class="card">
+        <div class="cardIcon purple">↗</div>
+        <h3>Evolution Summary</h3>
+        <p>Show today’s voucher redemption summary</p>
+        <div class="arrow purpleText">→</div>
+      </article>
+
+      <article class="card">
+        <div class="cardIcon blue">◎</div>
+        <h3>Top Partners</h3>
+        <p>Top 5 partners by redemption</p>
+        <div class="arrow blueText">→</div>
+      </article>
+
+      <article class="card">
+        <div class="cardIcon cyan">▦</div>
+        <h3>Branch Overview</h3>
+        <p>Redemption overview by branch</p>
+        <div class="arrow cyanText">→</div>
+      </article>
+
+      <article class="card">
+        <div class="cardIcon magenta">✦</div>
+        <h3>Ask Anything</h3>
+        <p>Ask me anything about your data</p>
+        <div class="arrow magentaText">→</div>
+      </article>
+    </section>
+
+    <section class="chatArea">
+      <div class="messages" id="messages">
+        <div class="emptyMessage" id="emptyMessage">Message Xiao_E˙◡˙ …</div>
+      </div>
+
+      <div class="composer">
+        <textarea id="messageInput" class="messageBox" placeholder="Type your message here..."></textarea>
+        <div class="composerBottom">
+          <button class="smallBtn" title="Attachment">⌕</button>
+          <button class="modeBtn">◉ Evolution⌄</button>
+          <button class="sendBtn" id="sendBtn">➤</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="loginOverlay" id="loginOverlay">
+  <div class="loginCard">
+    <h2>Login Xiao_E˙◡˙</h2>
+    <p>Use your current Evolution Supabase account. This version is read-only and will not modify, delete, suspend, or redeem any data.</p>
+    <input id="email" class="loginInput" type="email" placeholder="Email" autocomplete="username">
+    <input id="password" class="loginInput" type="password" placeholder="Password" autocomplete="current-password">
+    <button class="loginBtn" id="loginBtn">Login</button>
+    <div class="loginError" id="loginError"></div>
   </div>
-
-  <section class="card login" id="loginCard">
-    <h2>登录小E</h2>
-    <p>使用你现有 Evolution Supabase 登录帐号。第一版只开放查询，不会修改、删除或核销资料。</p>
-    <div class="grid">
-      <input id="email" type="email" autocomplete="username" placeholder="Email" />
-      <input id="password" type="password" autocomplete="current-password" placeholder="Password" />
-      <button id="loginBtn">登录</button>
-    </div>
-    <div class="error" id="loginError"></div>
-  </section>
-
-  <section class="card chat" id="chatCard">
-    <div class="messages" id="messages"></div>
-    <div class="quick">
-      <button class="chip" data-q="今天 redeem 多少？">今天核销</button>
-      <button class="chip" data-q="列出所有门店">门店名单</button>
-      <button class="chip" data-q="voucher summary">Voucher 汇总</button>
-    </div>
-    <div class="composer">
-      <input id="messageInput" placeholder="问小E，例如：今天 redeem 多少？" />
-      <button id="sendBtn">发送</button>
-    </div>
-  </section>
-
-  <button class="secondary hidden" id="logoutBtn">退出登录</button>
-  <div class="footer">小E 1.0 · Read-only mode · Evolution Optical</div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 const SUPABASE_URL = 'https://hukihbcyyqhanaqrizvm.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_kpPFeGYpedq2auo01Zo50A_aiSjdeVh';
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
 const $ = (id) => document.getElementById(id);
-const loginCard = $('loginCard'), chatCard = $('chatCard'), logoutBtn = $('logoutBtn'), messages = $('messages'), status = $('status');
-function addMessage(text, who='bot', meta='') { const wrap=document.createElement('div'); wrap.className=`msg ${who}`; wrap.textContent=text; if(meta){const m=document.createElement('div');m.className='meta';m.textContent=meta;wrap.appendChild(m);} messages.appendChild(wrap);messages.scrollTop=messages.scrollHeight; }
-function formatResult(payload){ let out=payload.answer||'已完成查询。'; if(Array.isArray(payload.by_branch)&&payload.by_branch.length){out+='\n\n'+payload.by_branch.map(x=>`${x.branch_name}: ${x.count}`).join('\n');} else if(Array.isArray(payload.data)&&payload.data.length){out+='\n\n'+payload.data.slice(0,12).map((x,i)=>{if(x.voucher_code)return `${i+1}. ${x.voucher_code} · ${x.customer_name||''} · ${x.status||''}`;if(x.partner_name)return `${i+1}. ${x.partner_name} · ${x.partner_code||''} · ${x.status||''}${x.remaining!=null?` · 剩余 ${x.remaining}`:''}`;if(x.branch_name)return `${i+1}. ${x.branch_name}${x.branch_code?` (${x.branch_code})`:''}`;return `${i+1}. ${JSON.stringify(x)}`;}).join('\n');} else if(payload.status_counts){out+='\n\n状态：\n'+Object.entries(payload.status_counts).map(([k,v])=>`${k}: ${v}`).join('\n');} return out; }
-async function renderSession(){ const {data:{session}}=await supabase.auth.getSession(); if(session){loginCard.classList.add('hidden');chatCard.classList.add('active');logoutBtn.classList.remove('hidden');status.textContent='已连接';if(!messages.children.length)addMessage('你好，我是小E 1.0。\n目前先开放只读查询：Voucher、Partner、Branch 和 Redemption。');}else{loginCard.classList.remove('hidden');chatCard.classList.remove('active');logoutBtn.classList.add('hidden');status.textContent='未登录';}}
-$('loginBtn').addEventListener('click',async()=>{$('loginError').textContent='';const email=$('email').value.trim(),password=$('password').value;if(!email||!password){$('loginError').textContent='请输入 Email 和 Password。';return;}$('loginBtn').disabled=true;$('loginBtn').textContent='登录中…';const {error}=await supabase.auth.signInWithPassword({email,password});$('loginBtn').disabled=false;$('loginBtn').textContent='登录';if(error){$('loginError').textContent=error.message;return;}await renderSession();});
-async function sendMessage(text){const q=text.trim();if(!q)return;addMessage(q,'user');$('messageInput').value='';$('sendBtn').disabled=true;status.textContent='小E查询中…';try{const {data:{session}}=await supabase.auth.getSession();if(!session)throw new Error('登录已失效，请重新登录。');const res=await fetch(`${SUPABASE_URL}/functions/v1/xiaoe-chat`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${session.access_token}`,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({message:q})});const payload=await res.json();if(!res.ok||payload.success===false)throw new Error(payload.error||'查询失败');addMessage(formatResult(payload),'bot',payload.action||'xiaoe-chat');}catch(e){addMessage(`查询失败：${e.message||e}`,'bot');}finally{$('sendBtn').disabled=false;status.textContent='已连接';}}
-$('sendBtn').addEventListener('click',()=>sendMessage($('messageInput').value));$('messageInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMessage(e.target.value);});document.querySelectorAll('.chip').forEach(btn=>btn.addEventListener('click',()=>sendMessage(btn.dataset.q||'')));logoutBtn.addEventListener('click',async()=>{await supabase.auth.signOut();messages.innerHTML='';await renderSession();});supabase.auth.onAuthStateChange(()=>renderSession());renderSession();
+const messages = $('messages');
+const emptyMessage = $('emptyMessage');
+const loginOverlay = $('loginOverlay');
+
+function addMessage(text, who='bot', meta=''){
+  if (emptyMessage) emptyMessage.remove();
+
+  const row = document.createElement('div');
+  row.className = 'msgRow' + (who === 'user' ? ' userRow' : '');
+
+  const bubble = document.createElement('div');
+  bubble.className = 'msgBubble ' + (who === 'user' ? 'userBubble' : 'botBubble');
+  bubble.textContent = text;
+
+  if(meta){
+    const m = document.createElement('div');
+    m.className = 'meta';
+    m.textContent = meta;
+    bubble.appendChild(m);
+  }
+
+  row.appendChild(bubble);
+  messages.appendChild(row);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function formatResult(payload){
+  let out = payload.answer || 'Query completed.';
+
+  if(Array.isArray(payload.by_branch) && payload.by_branch.length){
+    out += '\n\n' + payload.by_branch.map(x => `${x.branch_name}: ${x.count}`).join('\n');
+  } else if(Array.isArray(payload.data) && payload.data.length){
+    out += '\n\n' + payload.data.slice(0,12).map((x,i)=>{
+      if(x.voucher_code) return `${i+1}. ${x.voucher_code} · ${x.customer_name||''} · ${x.status||''}`;
+      if(x.partner_name) return `${i+1}. ${x.partner_name} · ${x.partner_code||''}${x.remaining!=null?` · Remaining ${x.remaining}`:''}`;
+      if(x.branch_name) return `${i+1}. ${x.branch_name}${x.branch_code?` (${x.branch_code})`:''}`;
+      return `${i+1}. ${JSON.stringify(x)}`;
+    }).join('\n');
+  } else if(payload.status_counts){
+    out += '\n\n' + Object.entries(payload.status_counts).map(([k,v])=>`${k}: ${v}`).join('\n');
+  }
+
+  return out;
+}
+
+async function renderSession(){
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if(session){
+    loginOverlay.classList.add('hidden');
+    if(messages.children.length === 1 && emptyMessage){
+      addMessage(
+        '你好，我是 Xiao_E˙◡˙。\nEvolution 模式已经连接，可以查询 Voucher、Partner、Branch 和 Redemption。',
+        'bot',
+        'Evolution · Read only'
+      );
+    }
+  }else{
+    loginOverlay.classList.remove('hidden');
+  }
+}
+
+$('loginBtn').addEventListener('click', async ()=>{
+  $('loginError').textContent = '';
+
+  const email = $('email').value.trim();
+  const password = $('password').value;
+
+  if(!email || !password){
+    $('loginError').textContent = 'Please enter Email and Password.';
+    return;
+  }
+
+  $('loginBtn').disabled = true;
+  $('loginBtn').textContent = 'Logging in...';
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+  $('loginBtn').disabled = false;
+  $('loginBtn').textContent = 'Login';
+
+  if(error){
+    $('loginError').textContent = error.message;
+    return;
+  }
+
+  await renderSession();
+});
+
+async function sendMessage(){
+  const q = $('messageInput').value.trim();
+  if(!q) return;
+
+  addMessage(q, 'user');
+  $('messageInput').value = '';
+  $('sendBtn').disabled = true;
+
+  try{
+    const { data: { session } } = await supabase.auth.getSession();
+    if(!session) throw new Error('Session expired. Please login again.');
+
+    const res = await fetch(`${SUPABASE_URL}/functions/v1/xiaoe-chat`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${session.access_token}`,
+        'apikey':SUPABASE_PUBLISHABLE_KEY
+      },
+      body:JSON.stringify({ message:q })
+    });
+
+    const payload = await res.json();
+
+    if(!res.ok || payload.success === false){
+      throw new Error(payload.error || 'Query failed');
+    }
+
+    addMessage(formatResult(payload),'bot',payload.action || 'xiaoe-chat');
+
+  }catch(e){
+    addMessage(`Query failed: ${e.message || e}`,'bot','system');
+  }finally{
+    $('sendBtn').disabled = false;
+  }
+}
+
+$('sendBtn').addEventListener('click', sendMessage);
+
+$('messageInput').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+$('logoutTop').addEventListener('click', async ()=>{
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+supabase.auth.onAuthStateChange(()=>renderSession());
+renderSession();
 </script>
 </body>
 </html>
