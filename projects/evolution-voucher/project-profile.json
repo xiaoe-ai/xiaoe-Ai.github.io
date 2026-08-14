@@ -1,0 +1,55 @@
+{
+  "version": "1.0",
+  "project_key": "evolution_voucher",
+  "display_name": "Evolution Voucher",
+  "project_type": "multi_role_operational_system",
+  "status": "active",
+  "management_mode": "managed_by_xiaoe",
+  "source_of_truth": {
+    "code": {
+      "provider": "github",
+      "repository": "xiaoe-ai/evolution-optical-voucher",
+      "default_branch": "main"
+    },
+    "database": {
+      "provider": "supabase",
+      "project_ref": "hukihbcyyqhanaqrizvm"
+    },
+    "memory": {
+      "provider": "supabase",
+      "table": "public.memories",
+      "project_key": "evolution_voucher"
+    }
+  },
+  "business_roles": [
+    "admin",
+    "partner",
+    "staff"
+  ],
+  "core_business_modules": [
+    "partner_management",
+    "staff_management",
+    "voucher_engine",
+    "voucher_issuance",
+    "branch_claim_control",
+    "qr_redemption",
+    "redemption_history",
+    "reporting"
+  ],
+  "xiaoe_relationship": {
+    "xiaoe_is": "project_manager_and_cognitive_layer",
+    "project_is": "managed_business_system",
+    "separation_rule": "XiaoE Core must remain independent from Evolution Voucher business logic."
+  },
+  "architecture_principles": [
+    "root_before_flowers",
+    "lean_development",
+    "root_cause_before_patch",
+    "least_privilege",
+    "verify_before_modify",
+    "smallest_justified_change",
+    "rollback_first_for_high_impact_changes"
+  ],
+  "current_phase": "real_world_observation",
+  "notes": "This profile registers Evolution Voucher as a XiaoE-managed project. It does not grant permissions, store secrets, or change runtime behavior."
+}
