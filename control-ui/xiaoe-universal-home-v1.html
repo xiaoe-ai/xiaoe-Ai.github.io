@@ -60,11 +60,11 @@ body.keyboard-open .composer{
   position:fixed;
   left:16px;
   right:16px;
-  bottom:calc(var(--keyboard-h) + 8px);
+  bottom:max(2px,calc(var(--keyboard-h) - 2px));
   z-index:999;
   border:1px solid #dfe5f2;
-  border-radius:20px;
-  box-shadow:0 16px 40px rgba(0,0,0,.28);
+  border-radius:20px 20px 14px 14px;
+  box-shadow:0 12px 28px rgba(0,0,0,.24);
 }
 body.keyboard-open .bottom{visibility:hidden}
 body.keyboard-open .chat{overflow:visible}
@@ -166,13 +166,14 @@ function syncKeyboard(){
   const vv = window.visualViewport;
   if(!vv) return;
 
-  // Refresh the baseline only while the textarea is not focused.
   if(document.activeElement !== input){
-    stableViewportHeight = Math.max(stableViewportHeight, window.innerHeight, vv.height);
+    stableViewportHeight = Math.max(stableViewportHeight, window.innerHeight, vv.height + vv.offsetTop);
   }
 
-  const keyboard = Math.max(0, stableViewportHeight - vv.height);
-  const open = document.activeElement === input && keyboard > 120;
+  // Safari may already pan the visual viewport upward. Subtract that pan so
+  // the composer is not lifted twice and can sit close to the keyboard.
+  const keyboard = Math.max(0, stableViewportHeight - (vv.height + vv.offsetTop));
+  const open = document.activeElement === input && keyboard > 100;
 
   document.documentElement.style.setProperty('--keyboard-h', `${open ? keyboard : 0}px`);
   document.body.classList.toggle('keyboard-open', open);
@@ -199,8 +200,6 @@ function send(){
   sendBtn.disabled = true;
   appendMessage(text,'user');
   input.value = '';
-
-  // Blur immediately after the send action so iOS dismisses its keyboard.
   releaseKeyboard();
 
   setTimeout(()=>{
@@ -210,8 +209,6 @@ function send(){
   },220);
 }
 
-// Important: do NOT move/reposition the composer on pointerdown/touchstart.
-// iOS must complete its native textarea focus during the first tap.
 input.addEventListener('focus',()=>{
   requestAnimationFrame(()=>{
     setTimeout(syncKeyboard,30);
@@ -249,20 +246,20 @@ input.addEventListener('keydown',(e)=>{
 
 window.addEventListener('load',()=>{
   const vv = window.visualViewport;
-  stableViewportHeight = Math.max(window.innerHeight, vv?.height || 0);
+  stableViewportHeight = Math.max(window.innerHeight, (vv?.height || 0) + (vv?.offsetTop || 0));
   lockDocument();
 });
 window.addEventListener('orientationchange',()=>{
   setTimeout(()=>{
     const vv = window.visualViewport;
-    stableViewportHeight = Math.max(window.innerHeight, vv?.height || 0);
+    stableViewportHeight = Math.max(window.innerHeight, (vv?.height || 0) + (vv?.offsetTop || 0));
     syncKeyboard();
   },250);
 });
 window.addEventListener('resize',syncKeyboard);
 if(window.visualViewport){
   window.visualViewport.addEventListener('resize',syncKeyboard);
-  window.visualViewport.addEventListener('scroll',lockDocument);
+  window.visualViewport.addEventListener('scroll',syncKeyboard);
 }
 </script>
 </body>
