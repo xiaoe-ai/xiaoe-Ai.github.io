@@ -1,5 +1,5 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "project_key": "evolution_voucher",
   "display_name": "Evolution Voucher",
   "project_type": "multi_role_operational_system",
@@ -26,6 +26,69 @@
       "resolution": "github_pages_api",
       "repository_from": "source_of_truth.code.repository",
       "fallback_url": "https://xiaoe-ai.github.io/evolution-optical-voucher/"
+    }
+  },
+  "assistant_routing": {
+    "enabled": true,
+    "mode": "read_only",
+    "project_mentions": [
+      "evolution",
+      "evolution voucher",
+      "voucher system",
+      "voucher系统",
+      "包车系统"
+    ],
+    "progress_terms": [
+      "进度",
+      "状态",
+      "做到哪里",
+      "做到哪",
+      "目前怎样",
+      "目前如何",
+      "现在怎样",
+      "现在如何",
+      "current state",
+      "progress",
+      "status"
+    ],
+    "ops_entity_terms": [
+      "redeem",
+      "redemption",
+      "核销",
+      "voucher",
+      "partner",
+      "branch",
+      "分行",
+      "门店"
+    ],
+    "strong_ops_terms": [
+      "top partner",
+      "top branch",
+      "今天 redeem",
+      "今日 redeem",
+      "今天核销",
+      "今日核销",
+      "今天多少张",
+      "今日多少张",
+      "本月核销",
+      "这个月核销",
+      "本月 redemption",
+      "这个月 redemption",
+      "哪个 branch",
+      "哪间 branch",
+      "branch 最多",
+      "哪个门店",
+      "哪间门店",
+      "门店最多",
+      "哪个 partner",
+      "哪一个 partner",
+      "partner 最多"
+    ],
+    "project_state_title": "Evolution Voucher - Current Project State",
+    "connector": {
+      "type": "supabase_edge_function",
+      "endpoint": "https://hukihbcyyqhanaqrizvm.supabase.co/functions/v1/xiaoe-evolution-connector",
+      "access": "xiaoe_authenticated_read_only"
     }
   },
   "business_roles": [
@@ -58,5 +121,5 @@
     "rollback_first_for_high_impact_changes"
   ],
   "current_phase": "real_world_observation",
-  "notes": "This profile registers Evolution Voucher as a XiaoE-managed project. It does not grant permissions, store secrets, or change runtime behavior. Runtime main-page links are resolved dynamically from the current GitHub Pages deployment with a last-known fallback URL."
+  "notes": "This profile registers Evolution Voucher as a XiaoE-managed project. It does not grant permissions, store secrets, or change runtime behavior. Runtime main-page links are resolved dynamically from the current GitHub Pages deployment with a last-known fallback URL. Assistant routing is configuration-driven and read-only; no secrets are stored in this profile."
 }
