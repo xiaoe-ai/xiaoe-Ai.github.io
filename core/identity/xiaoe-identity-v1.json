@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "module": "xiaoe_identity",
+  "status": "design_only",
+  "purpose": "Define XiaoE-owned identity and authorization boundaries before runtime auth migration.",
+  "roles": {
+    "owner": {
+      "description": "Primary XiaoE owner with full management authority.",
+      "capabilities": [
+        "manage_projects",
+        "manage_xiaoe_settings",
+        "manage_ai_router",
+        "manage_identity_members",
+        "approve_high_impact_actions"
+      ]
+    },
+    "operator": {
+      "description": "Trusted operator/developer for day-to-day project management.",
+      "capabilities": [
+        "view_projects",
+        "inspect_project_state",
+        "perform_authorized_project_operations",
+        "use_ai_router_when_enabled"
+      ]
+    },
+    "viewer": {
+      "description": "Read-only access for future use.",
+      "capabilities": [
+        "view_projects",
+        "inspect_project_state"
+      ]
+    }
+  },
+  "authorization_rules": [
+    "Authentication proves identity; authorization decides allowed actions.",
+    "XiaoE identity must remain separate from Evolution Voucher Admin, Partner and Staff business roles.",
+    "Least privilege is the default.",
+    "High-impact actions require explicit confirmation and may require step-up authentication in future.",
+    "No service-role key or provider secret may be exposed in frontend code.",
+    "AI Router model calls must use a backend-only interface.",
+    "Project access must be derived from XiaoE authorization, not from UI visibility alone."
+  ],
+  "high_impact_actions": [
+    "change_rls_or_database_permissions",
+    "delete_or_destructively_modify_data",
+    "change_production_configuration",
+    "enable_or_change_paid_ai_provider",
+    "change_identity_or_owner_permissions",
+    "remove_project_or_project_connection"
+  ],
+  "runtime_state": {
+    "xiaoe_auth_connected": false,
+    "current_frontend_auth": "evolution_supabase_auth",
+    "migration_mode": "coexist_then_cutover"
+  },
+  "migration_gates": [
+    "Create a XiaoE-owned authentication and authorization source of truth.",
+    "Verify owner login and session handling.",
+    "Verify role-based authorization independently from Evolution Voucher business roles.",
+    "Connect XiaoE Control UI to XiaoE authorization.",
+    "Connect AI Router through backend-only authorized endpoints.",
+    "Only after verification, retire Evolution Supabase identity dependency from XiaoE UI."
+  ]
+}
