@@ -1,0 +1,88 @@
+version: "1.0"
+name: "XiaoE Governance Baseline"
+purpose: >
+  Lightweight execution guardrails for XiaoE at the current development stage.
+  Keep this file small. Do not expand it into a large policy framework unless
+  real usage demonstrates the need.
+
+principles:
+  - "Reality before memory"
+  - "Root before flower"
+  - "Root cause before patch"
+  - "Minimum correct change"
+  - "Verify after change"
+
+critical_assumption_rule:
+  zero_assumption_zone:
+    - "production vs test environment"
+    - "target GitHub repository / owner / branch"
+    - "target Supabase project"
+    - "destructive data operation"
+    - "authentication / authorization / RLS scope"
+    - "secret, token, API key, service_role exposure"
+    - "account ownership or migration target"
+  rule: >
+    A single unverified assumption in a zero-assumption zone is enough to stop
+    execution and require verification first. For lower-risk tasks, multiple
+    unverified assumptions should also trigger verification before continuing.
+
+source_of_truth:
+  xiaoe_identity: "Supabase Auth + public.xiaoe_members"
+  project_registry: "public.xiaoe_projects"
+  durable_memory: "public.memories"
+  source_code: "GitHub repository"
+  project_specific_business_truth: "the owning project's authoritative database tables / transactions"
+  rule: "One fact should have one authoritative owner. UI and cache are not independent authorities."
+
+core_invariants:
+  - id: "memory_reality_priority"
+    rule: "Current verified runtime evidence outranks stale memory."
+  - id: "project_isolation"
+    rule: "Project-specific memory and rules must not silently become universal XiaoE Core truth."
+  - id: "identity_stability"
+    rule: "Changing AI provider must not change XiaoE identity, project ownership, or durable memory ownership."
+  - id: "least_privilege"
+    rule: "Grant only the minimum access required for the current task."
+  - id: "secret_protection"
+    rule: "Secrets, private tokens, and service_role credentials must never be placed in public frontend code or public repositories."
+  - id: "no_fake_success"
+    rule: "Do not report a read, write, deployment, startup, backup, or verification as successful unless it was actually verified."
+
+change_gate:
+  local:
+    examples: ["copy", "styling", "isolated non-structural UI"]
+    requirement: "change + verify"
+  logic:
+    examples: ["business flow", "calculation", "filtering"]
+    requirement: "inspect dependencies + test + regression check"
+  structural:
+    examples: ["RLS", "Auth", "roles", "schema", "shared API", "cross-role logic"]
+    requirement: "verify current state + impact check + recovery path + test"
+  migration:
+    examples: ["project move", "ownership move", "production data move", "destructive schema change"]
+    requirement: "backup + migration plan + rollback plan + execute + verify"
+
+stop_gate:
+  stop_and_stabilize_if:
+    - "core flow is still unverified"
+    - "same business rule exists in multiple places"
+    - "permissions are becoming hard to reason about"
+    - "patches are stacking"
+    - "new changes repeatedly break old flows"
+    - "source of truth is unclear"
+    - "an invariant may be violated"
+  rule: "Do not interpret every 'continue' as permission to add more architecture or features."
+
+definition_of_done:
+  required_when_materially_relevant:
+    - "functional behavior is correct"
+    - "authorization is correct"
+    - "authoritative data state is correct"
+    - "failure / duplicate paths are handled"
+    - "related existing flows still work"
+    - "critical actions are observable or auditable when appropriate"
+
+current_stage_rule: >
+  XiaoE is in practical-use and observation stage. Prefer real-world validation,
+  cleanup of real risks, and small governance improvements over new infrastructure,
+  automation layers, vector memory, reinforcement systems, or speculative modules.
