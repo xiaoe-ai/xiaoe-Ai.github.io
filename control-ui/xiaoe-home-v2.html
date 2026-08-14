@@ -23,7 +23,7 @@ body{min-height:100dvh}.wrap{width:min(980px,100%);margin:auto;padding:18px 14px
   <section class="cards">
     <button class="card" data-action="evolution_summary"><div class="icon purple">↗</div><b>Project Overview</b><span>今日核销、Top Partner、Branch 概况</span></button>
     <button class="card" id="quickSearch"><div class="icon cyan">⌕</div><b>Quick Search</b><span>直接输入 Voucher、Partner、Branch 或问题</span></button>
-    <button class="card mainCard" id="openEvolutionMain"><div class="icon cyan">▦</div><div class="copy"><b>Open Evolution Main</b><span>进入 Evolution Voucher 正式系统</span></div><div class="arrow">›</div></button>
+    <button class="card mainCard" id="openEvolutionMain"><div class="icon cyan">▦</div><div class="copy"><b>Open Evolution Main</b><span id="mainLinkStatus">自动读取当前正式地址</span></div><div class="arrow">›</div></button>
   </section>
   <section class="chat"><div class="messages" id="messages"></div><div class="composer"><textarea id="message" placeholder="Ask Xiao_E about Evolution..."></textarea><div class="actions"><button class="mode">◉ Evolution · Read only</button><button class="send" id="send">➤</button></div></div></section>
 </div>
@@ -33,18 +33,35 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const XIAOE_URL='https://uuqiwyqxllqsuboogbxh.supabase.co';
 const XIAOE_KEY='sb_publishable_FHfn50t7yu0kq6qhhLtshQ_Vb6imElO';
 const CONNECTOR='https://hukihbcyyqhanaqrizvm.supabase.co/functions/v1/xiaoe-evolution-connector';
-const EVOLUTION_MAIN='https://xiaoe-ai.github.io/evolution-optical-voucher/';
+const PROJECT_PROFILE='/projects/evolution-voucher/project-profile.json';
+const DEFAULT_MAIN='https://xiaoe-ai.github.io/evolution-optical-voucher/';
 const supabase=createClient(XIAOE_URL,XIAOE_KEY);const $=id=>document.getElementById(id);
 function add(text,who='bot',meta=''){const row=document.createElement('div');row.className='row'+(who==='user'?' user':'');const b=document.createElement('div');b.className='bubble';b.textContent=text;if(meta){const m=document.createElement('div');m.className='meta';m.textContent=meta;b.appendChild(m)}row.appendChild(b);$('messages').appendChild(row);$('messages').scrollTop=$('messages').scrollHeight}
 function format(p){let out=p.answer||'Query completed.';if(Array.isArray(p.by_branch)&&p.by_branch.length)out+='\n\n'+p.by_branch.map(x=>`${x.branch_name}: ${x.count}`).join('\n');else if(Array.isArray(p.data)&&p.data.length)out+='\n\n'+p.data.slice(0,12).map((x,i)=>`${i+1}. ${x.partner_name||x.branch_name||x.voucher_code||JSON.stringify(x)}${x.count!=null?` · ${x.count}`:''}`).join('\n');else if(p.status_counts)out+='\n\n'+Object.entries(p.status_counts).map(([k,v])=>`${k}: ${v}`).join('\n');return out}
 async function session(){return (await supabase.auth.getSession()).data.session}
 async function render(){const s=await session();$('overlay').classList.toggle('hidden',!!s);$('authPill').textContent=s?'XiaoE Owner · Connected':'XiaoE Auth';if(s&&$('messages').children.length===0)add('Evolution Project 已连接。你可以直接查询 Voucher、Partner、Branch、Redemption，或先看 Project Overview。','bot','Evolution · Read only')}
 async function call(action,message=''){const s=await session();if(!s){await render();throw new Error('XiaoE session required')}const res=await fetch(CONNECTOR,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.access_token}`},body:JSON.stringify({action,message})});const p=await res.json().catch(()=>({success:false,error:'Invalid response'}));if(!res.ok||p.success===false)throw new Error(p.error||'Query failed');return p}
+async function resolveEvolutionMain(){
+  let fallback=DEFAULT_MAIN;
+  try{
+    const profileRes=await fetch(PROJECT_PROFILE,{cache:'no-store'});
+    if(!profileRes.ok)throw new Error('Project profile unavailable');
+    const profile=await profileRes.json();
+    const repo=profile?.source_of_truth?.code?.repository;
+    fallback=profile?.runtime_links?.main_page?.fallback_url||fallback;
+    if(!repo)throw new Error('Repository missing from project profile');
+    const pagesRes=await fetch(`https://api.github.com/repos/${repo}/pages`,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});
+    if(!pagesRes.ok)throw new Error('GitHub Pages lookup failed');
+    const pages=await pagesRes.json();
+    if(pages?.html_url)return pages.html_url;
+  }catch(e){console.warn('Main page auto-resolution fallback:',e)}
+  return fallback;
+}
 $('login').onclick=async()=>{$('error').textContent='';$('login').disabled=true;const {error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});$('password').value='';$('login').disabled=false;if(error){$('error').textContent=error.message;return}await render()};
 $('logout').onclick=async()=>{await supabase.auth.signOut();location.reload()};
 document.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=async()=>{try{const p=await call(btn.dataset.action);add(format(p),'bot',p.action)}catch(e){add('Query failed: '+e.message,'bot','system')}});
 $('quickSearch').onclick=()=>{$('message').focus()};
-$('openEvolutionMain').onclick=()=>{location.href=EVOLUTION_MAIN};
+$('openEvolutionMain').onclick=async()=>{const btn=$('openEvolutionMain');const status=$('mainLinkStatus');btn.disabled=true;status.textContent='正在读取当前正式地址…';const url=await resolveEvolutionMain();status.textContent='进入 Evolution Voucher 正式系统';btn.disabled=false;location.href=url};
 async function send(){const q=$('message').value.trim();if(!q)return;add(q,'user');$('message').value='';$('message').blur();try{const p=await call('',q);add(format(p),'bot',p.action)}catch(e){add('Query failed: '+e.message,'bot','system')}}
 $('send').onclick=send;$('message').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});supabase.auth.onAuthStateChange(()=>render());render();
 </script>
