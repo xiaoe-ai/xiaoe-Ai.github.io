@@ -53,7 +53,7 @@ $('evolutionProject').addEventListener('click',()=>location.href='/control-ui/xi
 $('projectsBtn').addEventListener('click',()=>$('evolutionProject').focus());
 $('assistantBtn').addEventListener('click',()=>input.focus());
 $('brainBtn').addEventListener('click',()=>location.href='/control-ui/brain-switch.html');
-$('memoryBtn').addEventListener('click',()=>addMessage('Memory 模块已经存在于 XiaoE Core；独立管理界面还没有开放。','bot','Memory · Coming next'));
+$('memoryBtn').addEventListener('click',()=>location.href='/control-ui/xiaoe-memory.html');
 taskToggle.addEventListener('click',()=>{const open=tasks.classList.toggle('open');taskToggle.setAttribute('aria-expanded',String(open))});
 function lockDocument(){document.documentElement.scrollLeft=0;document.body.scrollLeft=0;window.scrollTo(0,0)}
 function syncKeyboard(){const vv=window.visualViewport;if(!vv)return;if(document.activeElement!==input)stableViewportHeight=Math.max(stableViewportHeight,window.innerHeight,vv.height+vv.offsetTop);const keyboard=Math.max(0,stableViewportHeight-(vv.height+vv.offsetTop));const open=document.activeElement===input&&keyboard>100;document.documentElement.style.setProperty('--keyboard-h',`${open?keyboard:0}px`);document.body.classList.toggle('keyboard-open',open);lockDocument()}
