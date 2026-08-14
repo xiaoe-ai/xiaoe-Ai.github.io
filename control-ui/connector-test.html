@@ -6,14 +6,16 @@
   <title>XiaoE Connector Test</title>
   <style>
     body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#0b1020;color:#f5f7ff;min-height:100vh;display:grid;place-items:center;padding:24px}
-    .card{width:min(560px,100%);background:#11182b;border:1px solid #2b3a64;border-radius:18px;padding:24px}
+    .card{width:min(620px,100%);background:#11182b;border:1px solid #2b3a64;border-radius:18px;padding:24px}
     h1{margin:0 0 8px}.muted{color:#aeb9d5;font-size:14px;line-height:1.5}
     input,button{width:100%;box-sizing:border-box;margin-top:12px;padding:12px 14px;border-radius:10px;font-size:16px}
     input{border:1px solid #35446f;background:#0a0f1f;color:white}
     button{border:0;font-weight:700;cursor:pointer}
     .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
-    .status{margin-top:16px;white-space:pre-wrap;font-size:14px;line-height:1.5;background:#0a0f1f;border-radius:10px;padding:12px;min-height:48px}
+    .row.three{grid-template-columns:repeat(3,1fr)}
+    .status{margin-top:16px;white-space:pre-wrap;font-size:14px;line-height:1.5;background:#0a0f1f;border-radius:10px;padding:12px;min-height:48px;overflow:auto;max-height:50vh}
     .ok{color:#9be59b}.err{color:#ff9e9e}
+    @media(max-width:620px){.row,.row.three{grid-template-columns:1fr 1fr}.row.three button:last-child{grid-column:1/-1}}
   </style>
 </head>
 <body>
@@ -26,8 +28,14 @@
     <button id="login">Login XiaoE Owner</button>
 
     <div class="row">
-      <button id="health" disabled>Test Health</button>
-      <button id="branches" disabled>Test Branch List</button>
+      <button class="testBtn" id="health" disabled>Test Health</button>
+      <button class="testBtn" id="branches" disabled>Test Branch List</button>
+    </div>
+
+    <div class="row three">
+      <button class="testBtn" id="summary" disabled>Evolution Summary</button>
+      <button class="testBtn" id="partners" disabled>Top Partners</button>
+      <button class="testBtn" id="overview" disabled>Branch Overview</button>
     </div>
 
     <div id="status" class="status">Not connected.</div>
@@ -43,6 +51,7 @@
 
     const $ = (id) => document.getElementById(id);
     const setStatus = (msg, cls='') => { $('status').className = 'status ' + cls; $('status').textContent = msg; };
+    const setTestsEnabled = (enabled) => document.querySelectorAll('.testBtn').forEach(btn => btn.disabled = !enabled);
 
     async function getSession() {
       const { data: { session } } = await supabase.auth.getSession();
@@ -75,20 +84,21 @@
       $('password').value = '';
       $('login').disabled = false;
       if (error) { setStatus('Login failed: ' + error.message, 'err'); return; }
-      if (!data?.session) { setStatus('Login did not create a session. Check whether email confirmation is required.', 'err'); return; }
-      $('health').disabled = false;
-      $('branches').disabled = false;
-      setStatus('XiaoE Owner login successful. Now test Health first.', 'ok');
+      if (!data?.session) { setStatus('Login did not create a session.', 'err'); return; }
+      setTestsEnabled(true);
+      setStatus('XiaoE Owner login successful. Run the v2 read-only tests.', 'ok');
     });
 
     $('health').addEventListener('click', () => callConnector('health'));
     $('branches').addEventListener('click', () => callConnector('branch_list'));
+    $('summary').addEventListener('click', () => callConnector('evolution_summary'));
+    $('partners').addEventListener('click', () => callConnector('top_partners'));
+    $('overview').addEventListener('click', () => callConnector('branch_overview'));
 
     const existing = await getSession();
     if (existing) {
-      $('health').disabled = false;
-      $('branches').disabled = false;
-      setStatus('Existing XiaoE session found. Test Health first.', 'ok');
+      setTestsEnabled(true);
+      setStatus('Existing XiaoE session found. Run the v2 read-only tests.', 'ok');
     }
   </script>
 </body>
