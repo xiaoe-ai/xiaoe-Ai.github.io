@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "project_key": "evolution_voucher",
   "display_name": "Evolution Voucher",
   "project_type": "multi_role_operational_system",
@@ -19,6 +19,13 @@
       "provider": "supabase",
       "table": "public.memories",
       "project_key": "evolution_voucher"
+    }
+  },
+  "runtime_links": {
+    "main_page": {
+      "resolution": "github_pages_api",
+      "repository_from": "source_of_truth.code.repository",
+      "fallback_url": "https://xiaoe-ai.github.io/evolution-optical-voucher/"
     }
   },
   "business_roles": [
@@ -51,5 +58,5 @@
     "rollback_first_for_high_impact_changes"
   ],
   "current_phase": "real_world_observation",
-  "notes": "This profile registers Evolution Voucher as a XiaoE-managed project. It does not grant permissions, store secrets, or change runtime behavior."
+  "notes": "This profile registers Evolution Voucher as a XiaoE-managed project. It does not grant permissions, store secrets, or change runtime behavior. Runtime main-page links are resolved dynamically from the current GitHub Pages deployment with a last-known fallback URL."
 }
