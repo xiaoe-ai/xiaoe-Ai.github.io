@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#050816">
+<title>XiaoE Universal Home v1</title>
+<style>
+:root{
+  --bg:#050816;
+  --panel:#0b1224;
+  --panel2:#0e1830;
+  --line:rgba(120,140,255,.22);
+  --text:#f7f8ff;
+  --muted:#9ea9c4;
+  --blue:#2f7cff;
+  --purple:#7b47ff;
+  --cyan:#20d4eb;
+  --white:#ffffff;
+  --ink:#17213d;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-text-size-adjust:100%}
+body{position:fixed;inset:0;overscroll-behavior:none}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.shell{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;background:
+  radial-gradient(circle at 18% 0%,rgba(55,103,255,.10),transparent 24%),
+  radial-gradient(circle at 92% 16%,rgba(124,64,255,.10),transparent 24%),
+  linear-gradient(180deg,#050816,#071022 62%,#040713)}
+.page{height:100%;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px calc(10px + var(--safe-bottom));overflow:hidden}
+.top{display:flex;align-items:center;justify-content:space-between;min-height:44px}
+.brand{display:flex;align-items:center;gap:10px;font-size:27px;font-weight:800;letter-spacing:-.7px}
+.brandMark{width:38px;height:38px;border-radius:14px;background:linear-gradient(145deg,#2f7cff,#7b47ff);display:grid;place-items:center;font-size:23px;box-shadow:0 0 22px rgba(70,90,255,.24)}
+.status{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:8px 12px;border-radius:999px;font-size:12px;color:#c7d3f3;background:rgba(255,255,255,.02)}
+.dot{width:7px;height:7px;border-radius:50%;background:#24e5a5;box-shadow:0 0 10px rgba(36,229,165,.6)}
+.hero h1{margin:0;font-size:25px;line-height:1.2}.hero p{margin:5px 0 0;color:var(--muted);font-size:13px}
+.core{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.core button{min-width:0;border:1px solid var(--line);border-radius:17px;padding:13px 7px;background:linear-gradient(180deg,rgba(16,25,52,.94),rgba(8,15,32,.98));color:var(--text);text-align:center}
+.core .icon{display:block;font-size:23px;margin-bottom:6px}.core .label{display:block;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.core .sub{display:none}
+.workspace{min-height:0;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:10px;overflow:hidden}
+.sectionTitle{display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:750}.sectionTitle small{color:var(--muted);font-weight:500}
+.projectCard{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(12,22,45,.96),rgba(7,14,29,.98));padding:12px 14px}
+.projectIcon{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(145deg,#1f5dff,#7250ff);font-size:19px}.projectText{min-width:0;flex:1}.projectName{font-size:14px;font-weight:750}.projectMeta{margin-top:3px;font-size:11px;color:var(--muted)}
+.tasks{border:1px solid var(--line);border-radius:17px;background:rgba(11,18,36,.95);overflow:hidden}
+.taskToggle{width:100%;border:0;background:transparent;color:var(--text);padding:13px 14px;display:flex;align-items:center;gap:10px;text-align:left}.taskToggle strong{flex:1}.count{min-width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:rgba(123,71,255,.22);color:#d7caff;font-size:12px}.chev{transition:transform .18s ease}.tasks.open .chev{transform:rotate(180deg)}
+.taskList{display:none;border-top:1px solid rgba(120,140,255,.12);padding:4px 14px 10px}.tasks.open .taskList{display:block}.task{padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;color:#d8def0}.task:last-child{border-bottom:0}
+.chat{min-height:0;border:1px solid rgba(116,91,255,.72);border-radius:22px;background:#fff;overflow:hidden;display:grid;grid-template-rows:minmax(0,1fr) auto;box-shadow:0 0 0 1px rgba(47,124,255,.24),0 10px 28px rgba(0,0,0,.18)}
+.messages{min-height:0;overflow-y:auto;overflow-x:hidden;padding:15px 15px 8px;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.message{max-width:90%;padding:11px 12px;border-radius:14px;background:#f1f4ff;border:1px solid #e3e8fb;font-size:13px;line-height:1.45}.message.user{margin-left:auto;background:linear-gradient(135deg,#7050ff,#347cff);color:#fff;border:0}.meta{margin-top:5px;font-size:9px;color:#8d98b6}
+.composer{background:#fff;border-top:1px solid #e7ebf4;padding:9px 10px 10px}
+.inputWrap{position:relative}.input{display:block;width:100%;height:64px;max-height:64px;resize:none;overflow-y:auto;border:0;outline:0;background:#fff;color:var(--ink);padding:9px 66px 8px 4px;font-size:16px;line-height:1.4}.input::placeholder{color:#929ab0}.send{position:absolute;right:0;bottom:2px;width:52px;height:52px;border:0;border-radius:16px;background:linear-gradient(145deg,#6e35ff,#2f7cff 62%,#20d4eb);color:#fff;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 18px rgba(47,124,255,.22);touch-action:manipulation;z-index:3}.send:disabled{opacity:.55}
+.composerBar{display:flex;align-items:center;justify-content:space-between;margin-top:6px}.mode{border:1px solid #dfe4f1;border-radius:999px;background:#fff;color:#5b56e8;padding:8px 11px;font-size:11px}.hint{font-size:10px;color:#98a1b7}
+.bottom{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;min-height:58px;border:1px solid rgba(120,140,255,.14);border-radius:20px;background:rgba(7,14,29,.96);padding:5px 18px}.bottom button{border:0;background:transparent;color:#adb6cf;font-size:11px}.bottom .home{color:#7760ff}.plus{width:48px;height:48px;border-radius:50%;margin:auto;background:linear-gradient(145deg,#7451ff,#2f7cff)!important;color:#fff!important;font-size:28px!important}
+@media (min-width:720px){.page{width:min(820px,100%);margin:auto}.core .sub{display:block;margin-top:4px;font-size:10px;color:var(--muted)}}
+@media (max-height:720px){.page{gap:8px;padding-top:calc(8px + env(safe-area-inset-top))}.hero p{display:none}.core button{padding:10px 6px}.projectCard{padding:9px 12px}.bottom{min-height:50px}.plus{width:42px;height:42px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <main class="page" id="page">
+    <header class="top">
+      <div class="brand"><span class="brandMark">◡</span><span>XiaoE</span></div>
+      <div class="status"><span class="dot"></span><span>Owner · Connected</span></div>
+    </header>
+
+    <section class="hero">
+      <h1>你好，XiaoE Owner 👋</h1>
+      <p>XiaoE 已准备就绪。</p>
+    </section>
+
+    <section class="core" aria-label="Core modules">
+      <button type="button"><span class="icon">📁</span><span class="label">项目</span><span class="sub">Projects</span></button>
+      <button type="button"><span class="icon">◉</span><span class="label">助手</span><span class="sub">Assistant</span></button>
+      <button type="button"><span class="icon">🧠</span><span class="label">AI 大脑</span><span class="sub">Brain</span></button>
+      <button type="button"><span class="icon">◇</span><span class="label">记忆</span><span class="sub">Memory</span></button>
+    </section>
+
+    <section class="workspace">
+      <div class="sectionTitle"><span>我的项目</span><small>查看全部 ›</small></div>
+      <div class="projectCard">
+        <div class="projectIcon">▦</div>
+        <div class="projectText"><div class="projectName">Evolution Voucher</div><div class="projectMeta">Project Workspace · Read only</div></div>
+        <div>›</div>
+      </div>
+      <div class="tasks" id="tasks">
+        <button class="taskToggle" id="taskToggle" type="button" aria-expanded="false">
+          <span>☑</span><strong>今日任务</strong><span class="count">3</span><span class="chev">⌄</span>
+        </button>
+        <div class="taskList">
+          <div class="task">跟进重要项目事项</div>
+          <div class="task">准备今日所需资料</div>
+          <div class="task">Review 项目进度</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chat" id="chat">
+      <div class="messages" id="messages">
+        <div class="message">你好，我是 XiaoE。这里是通用工作空间，项目只是其中一个模块。<div class="meta">Universal Home · UI test</div></div>
+      </div>
+      <div class="composer">
+        <div class="inputWrap">
+          <textarea class="input" id="messageInput" placeholder="问 XiaoE 任何问题…" rows="2"></textarea>
+          <button class="send" id="sendBtn" type="button" aria-label="Send">➤</button>
+        </div>
+        <div class="composerBar"><button class="mode" type="button">◉ 智能模式⌄</button><span class="hint">发送后自动收起键盘</span></div>
+      </div>
+    </section>
+
+    <nav class="bottom" aria-label="Bottom navigation">
+      <button class="home" type="button">⌂<br>首页</button>
+      <button class="plus" type="button">＋</button>
+      <button type="button">●<br>我的</button>
+    </nav>
+  </main>
+</div>
+
+<script>
+const tasks = document.getElementById('tasks');
+const taskToggle = document.getElementById('taskToggle');
+const input = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const messages = document.getElementById('messages');
+let sendLocked = false;
+
+taskToggle.addEventListener('click',()=>{
+  const open = tasks.classList.toggle('open');
+  taskToggle.setAttribute('aria-expanded', String(open));
+});
+
+function appendMessage(text, who='user'){
+  const el = document.createElement('div');
+  el.className = 'message' + (who==='user' ? ' user' : '');
+  el.textContent = text;
+  messages.appendChild(el);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function releaseKeyboard(){
+  try{ input.blur(); }catch(e){}
+  window.requestAnimationFrame(()=>{
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    window.scrollTo(0,0);
+  });
+}
+
+function send(){
+  if(sendLocked) return;
+  const text = input.value.trim();
+  if(!text) return;
+  sendLocked = true;
+  sendBtn.disabled = true;
+  appendMessage(text,'user');
+  input.value = '';
+  releaseKeyboard();
+  setTimeout(()=>{
+    appendMessage('UI 测试讯息已收到。正式接入 XiaoE 后，这里会显示真实回复。','bot');
+    sendLocked = false;
+    sendBtn.disabled = false;
+  },220);
+}
+
+sendBtn.addEventListener('pointerdown',(e)=>{e.preventDefault();send();},{passive:false});
+sendBtn.addEventListener('touchstart',(e)=>{e.preventDefault();send();},{passive:false});
+sendBtn.addEventListener('click',(e)=>{if(e.detail===0) send();});
+input.addEventListener('keydown',(e)=>{
+  if(e.key==='Enter' && !e.shiftKey){e.preventDefault();send();}
+});
+
+// Mobile stability guard: the document itself never scrolls or shifts.
+function lockViewport(){
+  window.scrollTo(0,0);
+  document.documentElement.scrollLeft = 0;
+  document.body.scrollLeft = 0;
+}
+window.addEventListener('load',lockViewport);
+window.addEventListener('resize',lockViewport);
+window.addEventListener('orientationchange',lockViewport);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',()=>{
+    // Keep the app shell fixed; only internal message area may scroll.
+    lockViewport();
+  });
+  window.visualViewport.addEventListener('scroll',lockViewport);
+}
+</script>
+</body>
+</html>
