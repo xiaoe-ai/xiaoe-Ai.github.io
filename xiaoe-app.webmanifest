@@ -1,0 +1,11 @@
+{
+  "name": "XiaoE",
+  "short_name": "XiaoE",
+  "description": "XiaoE AI workspace",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050816",
+  "theme_color": "#050816",
+  "orientation": "portrait-primary"
+}
