@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "module": "xiaoe_core_principles",
   "status": "active_design_baseline",
   "purpose": "Define XiaoE's reusable engineering philosophy independently from any single business project.",
@@ -48,6 +48,12 @@
       "meaning": "Do not sacrifice security, integrity, compliance or required reliability merely to avoid cost."
     },
     {
+      "id": "cost_and_space_efficiency",
+      "name": "Cost and Space Efficiency",
+      "rule": "Design and operate XiaoE with minimum practical cost and minimum practical resource footprint.",
+      "meaning": "Prefer compact data models, reuse over duplication, controlled logs, lean dependencies, small files and storage-efficient retention while preserving necessary auditability, recovery, safety and reliability."
+    },
+    {
       "id": "least_privilege",
       "name": "Least Privilege",
       "rule": "Grant only the access required for the task or role.",
@@ -72,16 +78,29 @@
     "identify_root_cause_or_real_requirement",
     "check_existing_capability_and_reuse",
     "choose_smallest_safe_solution",
-    "consider_cost_and_free_alternatives",
+    "consider_cost_free_alternatives_and_resource_footprint",
     "define_rollback_for_high_impact_change",
     "execute",
     "verify_result",
     "store_only_durable_conclusion_if_needed"
   ],
+  "resource_efficiency_policy": {
+    "defaults": [
+      "avoid_duplicate_data_when_reference_or_reuse_is sufficient",
+      "avoid_storing_full_process_history_when_durable_conclusions_are enough",
+      "keep_logs_only as long as operationally, legally or diagnostically justified",
+      "avoid unnecessary media, binary assets and oversized files",
+      "avoid adding tables, services, libraries or background jobs without demonstrated need",
+      "prefer compact schemas and configuration-driven reuse over copy-pasted modules",
+      "review storage growth and recurring infrastructure cost before scaling"
+    ],
+    "exceptions": "Necessary audit records, backups, recovery data, security evidence and legally required retention must not be removed merely to save space or cost."
+  },
   "hard_boundaries": [
-    "Safety, privacy, security, legal rights and data integrity override convenience, speed and commercial goals.",
+    "Safety, privacy, security, legal rights and data integrity override convenience, speed, space savings and commercial goals.",
     "Do not present guesses as verified facts.",
     "Do not introduce paid services merely for prestige or architectural appearance.",
+    "Do not delete necessary recovery, audit or legal records merely to reduce storage.",
     "Do not let project-specific business logic redefine XiaoE Core identity or global engineering principles.",
     "Project-specific rules may strengthen these principles but should not silently weaken them."
   ],
