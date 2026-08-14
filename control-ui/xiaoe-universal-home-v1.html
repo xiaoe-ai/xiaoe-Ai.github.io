@@ -51,11 +51,11 @@ button{cursor:pointer}
 .messages{min-height:0;overflow-y:auto;overflow-x:hidden;padding:15px 15px 8px;color:var(--ink);-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .message{max-width:90%;padding:11px 12px;border-radius:14px;background:#f1f4ff;border:1px solid #e3e8fb;font-size:13px;line-height:1.45}.message.user{margin-left:auto;background:linear-gradient(135deg,#7050ff,#347cff);color:#fff;border:0}.meta{margin-top:5px;font-size:9px;color:#8d98b6}
 .composer{background:#fff;border-top:1px solid #e7ebf4;padding:9px 10px 10px;position:relative;z-index:5}
-.inputWrap{position:relative}.input{display:block;width:100%;height:64px;max-height:64px;resize:none;overflow-y:auto;border:0;outline:0;background:#fff;color:var(--ink);padding:9px 66px 8px 4px;font-size:16px;line-height:1.4}.input::placeholder{color:#929ab0}.send{position:absolute;right:0;bottom:2px;width:52px;height:52px;border:0;border-radius:16px;background:linear-gradient(145deg,#6e35ff,#2f7cff 62%,#20d4eb);color:#fff;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 18px rgba(47,124,255,.22);touch-action:manipulation;z-index:20}.send:disabled{opacity:.55}
+.inputWrap{position:relative}.input{display:block;width:100%;height:64px;max-height:64px;resize:none;overflow-y:auto;border:0;outline:0;background:#fff;color:var(--ink);padding:9px 66px 8px 4px;font-size:16px;line-height:1.4;-webkit-user-select:text;user-select:text}.input::placeholder{color:#929ab0}.send{position:absolute;right:0;bottom:2px;width:52px;height:52px;border:0;border-radius:16px;background:linear-gradient(145deg,#6e35ff,#2f7cff 62%,#20d4eb);color:#fff;font-size:20px;display:grid;place-items:center;box-shadow:0 8px 18px rgba(47,124,255,.22);touch-action:manipulation;z-index:20}.send:disabled{opacity:.55}
 .composerBar{display:flex;align-items:center;justify-content:space-between;margin-top:6px}.mode{border:1px solid #dfe4f1;border-radius:999px;background:#fff;color:#5b56e8;padding:8px 11px;font-size:11px}.hint{font-size:10px;color:#98a1b7}
 .bottom{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:center;min-height:58px;border:1px solid rgba(120,140,255,.14);border-radius:20px;background:rgba(7,14,29,.96);padding:5px 18px}.bottom button{border:0;background:transparent;color:#adb6cf;font-size:11px}.bottom .home{color:#7760ff}.plus{width:48px;height:48px;border-radius:50%;margin:auto;background:linear-gradient(145deg,#7451ff,#2f7cff)!important;color:#fff!important;font-size:28px!important}
 
-/* iPhone keyboard mode: keep the page fixed; only lift the composer. */
+/* Keyboard mode starts only AFTER iOS has already focused the textarea. */
 body.keyboard-open .composer{
   position:fixed;
   left:16px;
@@ -141,7 +141,7 @@ const input = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const messages = document.getElementById('messages');
 let sendLocked = false;
-let baseInnerHeight = window.innerHeight;
+let stableViewportHeight = Math.max(window.innerHeight, window.visualViewport?.height || 0);
 
 taskToggle.addEventListener('click',()=>{
   const open = tasks.classList.toggle('open');
@@ -157,49 +157,52 @@ function appendMessage(text, who='user'){
 }
 
 function lockDocument(){
-  document.documentElement.scrollTop = 0;
-  document.body.scrollTop = 0;
   document.documentElement.scrollLeft = 0;
   document.body.scrollLeft = 0;
   window.scrollTo(0,0);
 }
 
-function updateKeyboardState(){
+function syncKeyboard(){
   const vv = window.visualViewport;
   if(!vv) return;
-  const keyboard = Math.max(0, baseInnerHeight - (vv.height + vv.offsetTop));
-  const open = keyboard > 120;
+
+  // Refresh the baseline only while the textarea is not focused.
+  if(document.activeElement !== input){
+    stableViewportHeight = Math.max(stableViewportHeight, window.innerHeight, vv.height);
+  }
+
+  const keyboard = Math.max(0, stableViewportHeight - vv.height);
+  const open = document.activeElement === input && keyboard > 120;
+
   document.documentElement.style.setProperty('--keyboard-h', `${open ? keyboard : 0}px`);
   document.body.classList.toggle('keyboard-open', open);
   lockDocument();
 }
 
-function prepareComposerBeforeKeyboard(){
-  // Move composer before iOS decides to pan the visual viewport.
-  document.body.classList.add('keyboard-open');
-  const provisional = Math.round(Math.max(250, baseInnerHeight * 0.38));
-  document.documentElement.style.setProperty('--keyboard-h', `${provisional}px`);
+function closeKeyboardUI(){
+  document.body.classList.remove('keyboard-open');
+  document.documentElement.style.setProperty('--keyboard-h','0px');
   lockDocument();
 }
 
 function releaseKeyboard(){
   try{ input.blur(); }catch(e){}
-  setTimeout(()=>{
-    document.body.classList.remove('keyboard-open');
-    document.documentElement.style.setProperty('--keyboard-h','0px');
-    lockDocument();
-  },120);
+  setTimeout(closeKeyboardUI,100);
 }
 
 function send(){
   if(sendLocked) return;
   const text = input.value.trim();
   if(!text) return;
+
   sendLocked = true;
   sendBtn.disabled = true;
   appendMessage(text,'user');
   input.value = '';
+
+  // Blur immediately after the send action so iOS dismisses its keyboard.
   releaseKeyboard();
+
   setTimeout(()=>{
     appendMessage('UI 测试讯息已收到。正式接入 XiaoE 后，这里会显示真实回复。','bot');
     sendLocked = false;
@@ -207,41 +210,59 @@ function send(){
   },220);
 }
 
-input.addEventListener('pointerdown',prepareComposerBeforeKeyboard,{passive:true});
-input.addEventListener('touchstart',prepareComposerBeforeKeyboard,{passive:true});
+// Important: do NOT move/reposition the composer on pointerdown/touchstart.
+// iOS must complete its native textarea focus during the first tap.
 input.addEventListener('focus',()=>{
-  prepareComposerBeforeKeyboard();
-  setTimeout(updateKeyboardState,80);
+  requestAnimationFrame(()=>{
+    setTimeout(syncKeyboard,30);
+    setTimeout(syncKeyboard,120);
+    setTimeout(syncKeyboard,260);
+  });
 });
+
 input.addEventListener('blur',()=>{
-  setTimeout(()=>{
-    document.body.classList.remove('keyboard-open');
-    document.documentElement.style.setProperty('--keyboard-h','0px');
-    lockDocument();
-  },120);
+  setTimeout(closeKeyboardUI,80);
 });
 
-sendBtn.addEventListener('pointerdown',(e)=>{e.preventDefault();send();},{passive:false});
-sendBtn.addEventListener('touchstart',(e)=>{e.preventDefault();send();},{passive:false});
-sendBtn.addEventListener('click',(e)=>{if(e.detail===0) send();});
+sendBtn.addEventListener('pointerdown',(e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  send();
+},{passive:false});
+
+sendBtn.addEventListener('touchstart',(e)=>{
+  e.preventDefault();
+  e.stopPropagation();
+  send();
+},{passive:false});
+
+sendBtn.addEventListener('click',(e)=>{
+  if(e.detail===0) send();
+});
+
 input.addEventListener('keydown',(e)=>{
-  if(e.key==='Enter' && !e.shiftKey){e.preventDefault();send();}
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
 });
 
-window.addEventListener('load',()=>{baseInnerHeight=window.innerHeight;lockDocument();});
-window.addEventListener('orientationchange',()=>{
-  setTimeout(()=>{baseInnerHeight=window.innerHeight;lockDocument();},250);
-});
-window.addEventListener('resize',()=>{
-  if(!document.body.classList.contains('keyboard-open')) baseInnerHeight=window.innerHeight;
+window.addEventListener('load',()=>{
+  const vv = window.visualViewport;
+  stableViewportHeight = Math.max(window.innerHeight, vv?.height || 0);
   lockDocument();
 });
+window.addEventListener('orientationchange',()=>{
+  setTimeout(()=>{
+    const vv = window.visualViewport;
+    stableViewportHeight = Math.max(window.innerHeight, vv?.height || 0);
+    syncKeyboard();
+  },250);
+});
+window.addEventListener('resize',syncKeyboard);
 if(window.visualViewport){
-  window.visualViewport.addEventListener('resize',updateKeyboardState);
-  window.visualViewport.addEventListener('scroll',()=>{
-    updateKeyboardState();
-    lockDocument();
-  });
+  window.visualViewport.addEventListener('resize',syncKeyboard);
+  window.visualViewport.addEventListener('scroll',lockDocument);
 }
 </script>
 </body>
