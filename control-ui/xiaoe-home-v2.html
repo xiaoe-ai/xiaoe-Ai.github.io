@@ -33,7 +33,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const XIAOE_URL='https://uuqiwyqxllqsuboogbxh.supabase.co';
 const XIAOE_KEY='sb_publishable_FHfn50t7yu0kq6qhhLtshQ_Vb6imElO';
 const CONNECTOR='https://hukihbcyyqhanaqrizvm.supabase.co/functions/v1/xiaoe-evolution-connector';
-const EVOLUTION_MAIN='https://ericchaow.github.io/evolution-optical-voucher/';
+const EVOLUTION_MAIN='https://xiaoe-ai.github.io/evolution-optical-voucher/';
 const supabase=createClient(XIAOE_URL,XIAOE_KEY);const $=id=>document.getElementById(id);
 function add(text,who='bot',meta=''){const row=document.createElement('div');row.className='row'+(who==='user'?' user':'');const b=document.createElement('div');b.className='bubble';b.textContent=text;if(meta){const m=document.createElement('div');m.className='meta';m.textContent=meta;b.appendChild(m)}row.appendChild(b);$('messages').appendChild(row);$('messages').scrollTop=$('messages').scrollHeight}
 function format(p){let out=p.answer||'Query completed.';if(Array.isArray(p.by_branch)&&p.by_branch.length)out+='\n\n'+p.by_branch.map(x=>`${x.branch_name}: ${x.count}`).join('\n');else if(Array.isArray(p.data)&&p.data.length)out+='\n\n'+p.data.slice(0,12).map((x,i)=>`${i+1}. ${x.partner_name||x.branch_name||x.voucher_code||JSON.stringify(x)}${x.count!=null?` · ${x.count}`:''}`).join('\n');else if(p.status_counts)out+='\n\n'+Object.entries(p.status_counts).map(([k,v])=>`${k}: ${v}`).join('\n');return out}
