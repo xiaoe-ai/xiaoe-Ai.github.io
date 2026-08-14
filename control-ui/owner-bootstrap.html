@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>XiaoE Owner Bootstrap</title>
+  <style>
+    body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#111;color:#f5f5f5;min-height:100vh;display:grid;place-items:center;padding:24px}
+    .card{width:min(460px,100%);background:#1b1b1b;border:1px solid #333;border-radius:18px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    h1{margin:0 0 8px;font-size:24px}.muted{color:#aaa;font-size:14px;line-height:1.5;margin-bottom:20px}
+    label{display:block;font-size:13px;margin:14px 0 6px;color:#ccc}input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:1px solid #444;background:#0f0f0f;color:#fff;font-size:16px}
+    button{width:100%;margin-top:18px;padding:12px 14px;border:0;border-radius:10px;font-weight:700;font-size:16px;cursor:pointer}
+    .status{margin-top:16px;font-size:14px;line-height:1.5;white-space:pre-wrap}.ok{color:#9be59b}.err{color:#ff9e9e}.warn{color:#ffd37a}
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>XiaoE Owner Bootstrap</h1>
+    <div class="muted">Create the first XiaoE Owner account in the independent XiaoE Supabase project. Your password stays in the browser and is sent directly to Supabase Auth.</div>
+    <label>Email</label>
+    <input id="email" type="email" value="eri_evo@yahoo.com" autocomplete="username" readonly />
+    <label>New password</label>
+    <input id="password" type="password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters" />
+    <button id="signup">Create XiaoE Owner Account</button>
+    <div id="status" class="status"></div>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const SUPABASE_URL = 'https://uuqiwyqxllqsuboogbxh.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_FHfn50t7yu0kq6qhhLtshQ_Vb6imElO';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    const emailEl = document.getElementById('email');
+    const passwordEl = document.getElementById('password');
+    const statusEl = document.getElementById('status');
+    const signupBtn = document.getElementById('signup');
+
+    function setStatus(message, type='') {
+      statusEl.className = 'status ' + type;
+      statusEl.textContent = message;
+    }
+
+    signupBtn.addEventListener('click', async () => {
+      const email = emailEl.value.trim();
+      const password = passwordEl.value;
+      if (!password || password.length < 8) {
+        setStatus('Please use a password with at least 8 characters.', 'warn');
+        return;
+      }
+
+      signupBtn.disabled = true;
+      setStatus('Creating XiaoE Owner account...');
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      passwordEl.value = '';
+      signupBtn.disabled = false;
+
+      if (error) {
+        setStatus('Signup failed: ' + error.message, 'err');
+        return;
+      }
+
+      if (data?.session) {
+        setStatus('Account created and signed in successfully. Return to ChatGPT and say: 继续', 'ok');
+      } else {
+        setStatus('Account created. Please check the email inbox for a Supabase confirmation email, confirm it, then return to ChatGPT and say: 继续', 'ok');
+      }
+    });
+  </script>
+</body>
+</html>
