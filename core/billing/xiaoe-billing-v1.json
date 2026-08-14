@@ -1,0 +1,112 @@
+{
+  "version": "1.0",
+  "module": "xiaoe_billing_and_cost_control",
+  "status": "design_only",
+  "purpose": "Define XiaoE billing, cost accounting, usage metering, budget controls and future commercial charging before any payment collection is enabled.",
+  "principles": [
+    "Usage cost and customer charging are separate concepts and must be tracked separately.",
+    "No charge may be created from frontend UI alone.",
+    "All billable usage must be attributable to an authenticated identity, project and organization when applicable.",
+    "Provider cost must be recorded independently from XiaoE selling price.",
+    "Billing records must be auditable and must not depend on mutable client-side values.",
+    "Least privilege applies to viewing and changing billing configuration.",
+    "Paid provider calls remain subject to backend authorization and cost guardrails."
+  ],
+  "cost_accounting": {
+    "track_provider_cost": true,
+    "dimensions": [
+      "provider",
+      "model",
+      "project_key",
+      "organization_id",
+      "user_id",
+      "request_id",
+      "input_usage",
+      "output_usage",
+      "provider_reported_cost",
+      "currency",
+      "occurred_at"
+    ],
+    "rule": "Raw provider cost must remain available even when customer-facing pricing uses a different formula."
+  },
+  "usage_metering": {
+    "meterable_items": [
+      "ai_requests",
+      "input_tokens_or_provider_equivalent",
+      "output_tokens_or_provider_equivalent",
+      "storage_when_commercially_relevant",
+      "project_or_module_usage_when_commercially_relevant"
+    ],
+    "source": "backend_verified_events_only"
+  },
+  "budget_control": {
+    "supported_scopes": [
+      "global",
+      "organization",
+      "project",
+      "user"
+    ],
+    "controls": [
+      "soft_warning_limit",
+      "hard_spend_limit",
+      "request_quota",
+      "provider_allowlist",
+      "model_allowlist"
+    ],
+    "default_policy": "do_not_exceed_hard_limit_without_explicit_authorized_override"
+  },
+  "commercial_charging": {
+    "future_supported_models": [
+      "free",
+      "subscription",
+      "usage_based",
+      "credit_pack",
+      "hybrid"
+    ],
+    "future_entities": [
+      "plans",
+      "subscriptions",
+      "entitlements",
+      "usage_ledger",
+      "credit_ledger",
+      "invoices_or_charge_records",
+      "payment_provider_references"
+    ],
+    "customer_price_rule": "Customer pricing must be configuration-driven and must not be hardcoded into provider adapters."
+  },
+  "authorization": {
+    "owner": [
+      "view_all_costs",
+      "manage_billing_configuration",
+      "manage_budgets",
+      "manage_plans_when_enabled"
+    ],
+    "operator": [
+      "view_authorized_usage_and_costs"
+    ],
+    "viewer": [
+      "view_authorized_read_only_billing_summary"
+    ]
+  },
+  "integration_boundaries": {
+    "ai_router": "AI Router reports verified usage metadata to Billing/Cost Control after provider execution.",
+    "identity": "Billing requires XiaoE identity and authorization before protected billing actions.",
+    "project_registry": "Usage and cost must be attributable to project_key when project-specific.",
+    "payment_collection": "A future payment provider may collect money, but payment credentials and webhooks must remain backend-side."
+  },
+  "runtime_state": {
+    "usage_metering_enabled": false,
+    "customer_billing_enabled": false,
+    "payment_provider_connected": false,
+    "automatic_charging_enabled": false
+  },
+  "activation_gates": [
+    "Establish XiaoE-owned authentication and authorization.",
+    "Create backend-verified usage ledger.",
+    "Define provider cost normalization.",
+    "Define budget enforcement policy.",
+    "Only create commercial plans when a real commercial requirement exists.",
+    "Only connect a payment provider after billing records, permissions and webhook security are verified.",
+    "Verify test transactions in non-production mode before any real charge is enabled."
+  ]
+}
