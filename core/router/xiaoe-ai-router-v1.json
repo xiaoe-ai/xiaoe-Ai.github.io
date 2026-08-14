@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "module": "xiaoe_ai_router",
+  "status": "design_only",
+  "purpose": "Define the frontend/backend boundary for XiaoE AI routing before any paid provider is connected.",
+  "frontend": {
+    "allowed_responsibilities": [
+      "show_available_brain_choices",
+      "show_current_brain_choice",
+      "submit_requested_brain_choice",
+      "show_router_status",
+      "show_cost_or_approval_status_returned_by_backend"
+    ],
+    "forbidden_responsibilities": [
+      "store_provider_api_keys",
+      "call_paid_ai_provider_directly",
+      "decide_authorization_without_backend_verification",
+      "read_or_write_memories_directly",
+      "bypass_paid_call_approval"
+    ]
+  },
+  "backend": {
+    "components": [
+      "routing_engine",
+      "provider_registry",
+      "provider_adapters",
+      "authorization_gate",
+      "paid_call_approval_gate",
+      "memory_service_interface",
+      "usage_and_audit_logging"
+    ],
+    "responsibilities": [
+      "verify_identity_and_authorization",
+      "resolve_requested_or_auto_selected_provider",
+      "load_allowed_context_through_memory_service",
+      "invoke_provider_adapter",
+      "normalize_provider_response",
+      "enforce_cost_and_usage_limits",
+      "record_audit_and_usage_metadata"
+    ]
+  },
+  "providers": {
+    "interface": {
+      "input": [
+        "normalized_prompt",
+        "prepared_context",
+        "model_config",
+        "request_metadata"
+      ],
+      "output": [
+        "normalized_response",
+        "provider_name",
+        "model_name",
+        "usage_metadata",
+        "error_metadata"
+      ]
+    },
+    "rules": [
+      "Providers are replaceable adapters.",
+      "Provider-specific logic must stay inside its adapter.",
+      "Providers must not access public.memories directly.",
+      "Provider secrets must remain server-side only."
+    ],
+    "planned": [
+      "openai",
+      "anthropic",
+      "gemini",
+      "deepseek"
+    ]
+  },
+  "memory_boundary": {
+    "rule": "AI providers may only receive context prepared by XiaoE Memory Service.",
+    "direct_provider_memory_access": false,
+    "memory_source_of_truth": "Supabase public.memories"
+  },
+  "routing_modes": [
+    "gpt",
+    "claude",
+    "auto"
+  ],
+  "paid_call_policy": {
+    "default": "explicit_approval_required",
+    "frontend_can_approve_without_backend": false,
+    "backend_enforces_policy": true
+  },
+  "security_rules": [
+    "No provider secret may appear in frontend source code.",
+    "Authentication and authorization are separate checks.",
+    "Backend authorization must be verified for every protected router action.",
+    "High-impact router configuration changes require explicit confirmation.",
+    "Least privilege applies to project access and provider access.",
+    "Do not couple XiaoE Router authorization to Evolution Voucher business roles."
+  ],
+  "runtime_state": {
+    "router_backend_connected": false,
+    "provider_calls_enabled": false,
+    "control_ui_path": "control-ui/brain-switch.html",
+    "auth_dependency": "future_xiaoe_identity_layer"
+  },
+  "activation_gates": [
+    "Connect XiaoE-owned authentication and authorization.",
+    "Implement backend routing endpoint.",
+    "Implement one provider adapter first.",
+    "Keep provider key server-side.",
+    "Connect Memory Service interface.",
+    "Add usage and cost guardrails.",
+    "Verify end-to-end with a non-destructive test before enabling paid calls."
+  ]
+}
